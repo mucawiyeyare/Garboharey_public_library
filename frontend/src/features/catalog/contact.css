@@ -1,0 +1,256 @@
+.contact-heading {
+  text-align: center;
+  background: var(--soft);
+  border-bottom: 1px solid var(--line);
+  padding: 58px 0;
+}
+.contact-heading p:not(.eyebrow) {
+  max-width: 620px;
+  margin: 18px auto 0;
+  color: var(--muted);
+  line-height: 1.8;
+  font-size: 16px;
+}
+.contact-content {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 54px;
+  align-items: start;
+}
+.contact-details h2,
+.contact-self-service h2 {
+  font-family: var(--font-editorial);
+  font-weight: 400;
+  line-height: 1.35;
+  font-size: 24px;
+}
+.contact-details > p {
+  margin-top: 14px;
+  max-width: 540px;
+  font-size: 15px;
+  color: var(--muted);
+}
+.contact-unavailable {
+  padding: 20px;
+  border-inline-start: 3px solid var(--accent);
+  background: var(--soft);
+  font-size: 15px;
+  border-radius: var(--radius-sm);
+}
+.contact-list {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+}
+.contact-list > div {
+  position: relative;
+  padding: 16px 0 16px 36px;
+  border-bottom: 1px solid var(--line);
+}
+.contact-list svg {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 18px;
+  color: var(--accent);
+}
+.contact-list dt {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+.contact-list dd {
+  margin: 4px 0 0;
+  color: var(--text);
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+.contact-list a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+.contact-list a:hover {
+  text-decoration: underline;
+}
+
+/* Directions & Landmarks Card */
+.contact-directions {
+  margin-top: 18px;
+  padding: 16px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.contact-directions strong {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.contact-directions p {
+  margin: 0;
+  color: var(--muted);
+}
+
+/* Self-service & FAQ Aside */
+.contact-self-service {
+  padding: 30px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  align-self: start;
+}
+.contact-self-service > svg {
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.contact-self-service p {
+  color: var(--muted);
+  margin: 14px 0 20px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.contact-self-service .text-link {
+  margin-top: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+.contact-form-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 36px 32px;
+  box-shadow: var(--shadow-xs);
+}
+.contact-form-panel h2 {
+  font-family: var(--font-editorial);
+  font-weight: 400;
+  font-size: 26px;
+}
+.contact-form-panel > p {
+  font-size: 15px;
+  margin: 12px 0 24px;
+  color: var(--muted);
+  line-height: 1.65;
+}
+.contact-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* In-Page FAQs Section */
+.contact-faqs-section {
+  margin-top: 64px;
+  padding-top: 48px;
+  border-top: 1px solid var(--line);
+}
+.contact-faqs-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 36px;
+}
+.contact-faqs-header h2 {
+  font-family: var(--font-editorial);
+  font-size: clamp(24px, 3vw, 32px);
+  margin-bottom: 8px;
+}
+.contact-faqs-header p {
+  color: var(--muted);
+  font-size: 15px;
+}
+.contact-faqs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+.contact-faq-item {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 22px;
+}
+.contact-faq-item h3 {
+  font-family: var(--font-editorial);
+  font-size: 17px;
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: var(--text);
+}
+.contact-faq-item p {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Link to borrowing guide banner */
+.contact-guide-banner {
+  margin-top: 40px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 28px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.contact-guide-banner h3 {
+  font-family: var(--font-editorial);
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+.contact-guide-banner p {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 0;
+}
+.contact-guide-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 860px) {
+  .contact-content {
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .contact-faqs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 600px) {
+  .contact-heading {
+    padding: 42px 0;
+  }
+  .contact-form-panel {
+    padding: 24px 20px;
+  }
+  .contact-guide-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px 20px;
+  }
+  .contact-guide-actions {
+    justify-content: center;
+    width: 100%;
+  }
+  .contact-guide-actions .button {
+    width: 100%;
+    justify-content: center;
+  }
+}

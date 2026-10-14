@@ -1,0 +1,539 @@
+/* ══ Surface layer ═════════════════════════════════════════════════════════════
+   Visual style only (navbar, cards, shadows, buttons) inspired by sobda.org.
+   Loaded after every other stylesheet; it never changes layout or structure.
+   Colours still come from the library's brand settings (--accent etc.). */
+
+:root {
+  --card-radius: 20px;
+  --btn-radius: 12px;
+  --card-border: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+  --card-shadow: 0 1px 2px rgb(15 40 60 / 0.04), 0 10px 30px -12px rgb(15 40 60 / 0.16);
+  --card-shadow-hover: 0 20px 25px -5px rgb(15 40 60 / 0.1), 0 8px 10px -6px rgb(15 40 60 / 0.1);
+  --nav-shadow: 0 4px 20px -8px color-mix(in srgb, var(--accent) 40%, transparent);
+  --btn-shadow:
+    0 4px 6px -1px color-mix(in srgb, var(--accent) 30%, transparent),
+    0 2px 4px -2px color-mix(in srgb, var(--accent) 30%, transparent);
+  --btn-shadow-hover:
+    0 10px 18px -6px color-mix(in srgb, var(--accent) 45%, transparent),
+    0 4px 8px -4px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+[data-theme='dark'] {
+  --card-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 12px 32px -12px rgb(0 0 0 / 0.6);
+  --card-shadow-hover: 0 22px 30px -8px rgb(0 0 0 / 0.6), 0 8px 12px -6px rgb(0 0 0 / 0.45);
+  --nav-shadow: 0 6px 22px -10px rgb(0 0 0 / 0.7);
+}
+
+/* ── Navbar: frosted glass, soft coloured shadow, underline on the active link ── */
+.public-header {
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 14%, var(--line));
+  box-shadow: var(--nav-shadow);
+}
+.public-nav a {
+  position: relative;
+  padding-block: 8px;
+  font-weight: 500;
+  color: color-mix(in srgb, var(--text) 82%, transparent);
+  transition: color 0.15s ease;
+}
+.public-nav a::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  bottom: -6px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transition: transform 0.2s ease;
+}
+.public-nav a:hover {
+  color: var(--accent);
+}
+.public-nav a:hover::after {
+  transform: scaleX(0.6);
+}
+.public-nav a.active {
+  color: var(--accent);
+  font-weight: 600;
+}
+.public-nav a.active::after {
+  transform: scaleX(1);
+}
+.public-header .header-sign-in {
+  padding: 8px 16px;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  border-radius: var(--btn-radius);
+  background: var(--surface);
+  color: var(--accent);
+  font-weight: 600;
+  transition:
+    background 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.public-header .header-sign-in:hover {
+  background: var(--accent-soft);
+  box-shadow: var(--card-shadow);
+}
+/* Language selector and theme toggle as pills (the selector sets inline styles) */
+.nav-actions select {
+  border-radius: 999px !important;
+  padding: 6px 12px !important;
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--line)) !important;
+}
+.theme-toggle-btn {
+  border-radius: 999px;
+  border-color: transparent;
+  background: transparent;
+}
+.theme-toggle-btn:hover {
+  background: var(--accent-soft);
+  border-color: transparent;
+}
+.public-header .header-join-btn {
+  border-radius: var(--btn-radius);
+  box-shadow: var(--btn-shadow);
+}
+
+/* Staff & member workspace header: same frosted style */
+.workspace-header {
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 14%, var(--line));
+  box-shadow: var(--nav-shadow);
+}
+.sidebar {
+  box-shadow: var(--nav-shadow);
+  border-inline-end-color: color-mix(in srgb, var(--accent) 12%, var(--line));
+}
+.sidebar nav a.active,
+.nav-group-toggle.active {
+  position: relative;
+}
+.sidebar nav a.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+[dir='rtl'] .sidebar nav a.active {
+  box-shadow: inset -3px 0 0 var(--accent);
+}
+
+/* ── Cards: large radius, hairline border, soft deep shadow ── */
+.panel,
+.metric,
+.auth-panel,
+.join-status,
+.content-cards article,
+.borrowing-policy,
+.information-bottom,
+.reader-membership,
+.home-hours dl div,
+.membership-requirements,
+.acquisition-types label {
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+}
+.membership-requirements {
+  border-inline-start: 4px solid var(--accent);
+}
+.acquisition-types label {
+  border-radius: 16px;
+}
+.metric,
+.content-cards article,
+.home-hours dl div {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.metric:hover,
+.content-cards article:hover,
+.home-hours dl div:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--card-shadow-hover);
+}
+/* Dashboard figures: icons sit in a soft circle */
+.metric > div svg {
+  box-sizing: content-box;
+  padding: 8px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.modal-content {
+  border-radius: 24px;
+}
+.profile-dropdown {
+  border-radius: 16px;
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* Home: the figures become one card with dividers */
+.home-stats {
+  gap: 0;
+  overflow: hidden;
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+}
+.home-stats div {
+  border: 0;
+  border-radius: 0;
+  border-inline-start: 1px solid var(--line);
+  padding: 24px 12px;
+  background: transparent;
+}
+.home-stats div:first-child {
+  border-inline-start: 0;
+}
+.home-stats strong {
+  font-weight: 700;
+}
+
+/* Book cards */
+.book-tile {
+  padding: 12px 12px 16px;
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+  background: var(--surface);
+  box-shadow: var(--card-shadow);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.book-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--card-shadow-hover);
+}
+.book-tile .book-cover {
+  border-radius: 12px;
+  box-shadow: none;
+}
+.book-tile:hover .book-cover {
+  box-shadow: none;
+}
+.book-tile .book-meta {
+  padding-inline: 4px;
+}
+
+/* Category chips and pills */
+.home-chip-row a {
+  box-shadow: var(--card-shadow);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+.home-chip-row a:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--card-shadow-hover);
+}
+
+/* Section headings: a short accent line before the eyebrow */
+.reader-section-heading .eyebrow,
+.reader-guide .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.reader-section-heading .eyebrow::before,
+.reader-guide .eyebrow::before {
+  content: '';
+  width: 24px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+/* ── Buttons: rounded, primary casts a shadow in its own colour ── */
+.button {
+  border-radius: var(--btn-radius);
+}
+.button:not(.secondary):not(.ghost) {
+  box-shadow: var(--btn-shadow);
+}
+.button:not(.secondary):not(.ghost):not(:disabled):hover {
+  box-shadow: var(--btn-shadow-hover);
+  transform: translateY(-1px);
+}
+.button.secondary {
+  background: var(--surface);
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--line));
+}
+.button.secondary:not(:disabled):hover {
+  background: var(--accent-soft);
+  box-shadow: var(--card-shadow);
+}
+.reserve-now-btn {
+  border-radius: 10px;
+  box-shadow: var(--btn-shadow);
+}
+
+/* Hero search box floats above the photo */
+.library-hero-search {
+  border-radius: var(--card-radius);
+  box-shadow: 0 24px 48px -16px rgb(0 0 0 / 0.45);
+}
+
+/* Form fields */
+.input,
+.form-stack input:not([type='checkbox']):not([type='radio']):not([type='file']),
+.form-stack select,
+.form-stack textarea,
+.acquisition-form input:not([type='radio']),
+.acquisition-form select,
+.acquisition-form textarea,
+.search-input {
+  border-radius: var(--btn-radius);
+}
+
+/* Tables sit in a rounded frame */
+.panel .table-scroll {
+  border-radius: 14px;
+}
+
+/* Footer: clean white band with a soft top shadow */
+.public-footer-shell {
+  background: var(--surface);
+  border-top: 1px solid color-mix(in srgb, var(--accent) 12%, var(--line));
+  box-shadow: 0 -10px 30px -20px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.public-footer-expanded {
+  border-top: 0;
+}
+
+/* Phones: slightly smaller radius so cards don't look bubbly */
+@media (max-width: 640px) {
+  :root {
+    --card-radius: 16px;
+  }
+  .book-tile {
+    padding: 8px 8px 12px;
+  }
+  .home-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .home-stats div:nth-child(odd) {
+    border-inline-start: 0;
+  }
+  .home-stats div:nth-child(n + 3) {
+    border-top: 1px solid var(--line);
+  }
+  .public-nav a::after {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .metric:hover,
+  .content-cards article:hover,
+  .book-tile:hover,
+  .home-chip-row a:hover,
+  .button:hover {
+    transform: none;
+  }
+}
+/* Language selector follows light / dark mode (it sets a white background inline) */
+select[aria-label] {
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
+}
+
+/* Book cards: three large cards per row; two on tablets; one at a time on phones */
+.book-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+.book-grid .book-cover,
+.reader-collection .book-grid .book-cover {
+  height: 340px;
+  padding: 30px 28px;
+}
+.book-grid .book-cover strong {
+  font-size: 30px;
+  line-height: 1.2;
+}
+.book-grid .book-meta h3 {
+  font-size: 18px;
+}
+@media (max-width: 1024px) {
+  .book-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 22px;
+  }
+  .book-grid .book-cover,
+  .reader-collection .book-grid .book-cover {
+    height: 300px;
+  }
+}
+@media (max-width: 640px) {
+  .book-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .book-grid .book-cover,
+  .reader-collection .book-grid .book-cover {
+    height: 320px;
+    padding: 26px 24px;
+  }
+  .book-grid .book-cover strong {
+    font-size: 28px;
+  }
+}
+
+/* ── Navbar: below 1100px the links, Sign in and Join move into the menu panel ── */
+@media (max-width: 1100px) {
+  .public-header .public-nav,
+  .public-header .header-sign-in,
+  .public-header .header-join-btn {
+    display: none;
+  }
+  .public-header .mobile-menu {
+    display: inline-flex;
+    width: 42px;
+    height: 42px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line));
+    border-radius: 12px;
+    background: var(--surface);
+  }
+}
+/* Sign in and Join the Library inside the menu panel, same style as the large header */
+.navigation-actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.navigation-actions .button {
+  width: 100%;
+  min-height: 48px;
+  justify-content: center;
+}
+.navigation-sidebar nav a {
+  border-radius: 10px;
+}
+.navigation-sidebar nav a.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 600;
+}
+.navigation-sidebar nav a {
+  padding-inline: 12px;
+}
+
+/* Tick boxes keep their normal size and sit beside their text */
+.form-stack input[type='checkbox'],
+.form-stack input[type='radio'] {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  accent-color: var(--accent);
+}
+.membership-agree,
+.form-stack .checkbox-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+  text-align: start;
+}
+
+.copy-adjuster-shelf {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* ══ Logo colours: sky blue and orange from the Garbaharey Public Library logo ══ */
+:root {
+  --logo-blue: #1aaee0;
+  --logo-blue-soft: #e3f6fd;
+  --logo-blue-ink: #0b7fae;
+  --logo-orange: #f37021;
+  --logo-orange-soft: #fff0e5;
+  --logo-orange-ink: #c2510e;
+}
+[data-theme='dark'] {
+  --logo-blue-soft: #0f3445;
+  --logo-blue-ink: #6fd2f5;
+  --logo-orange-soft: #3d2414;
+  --logo-orange-ink: #ffa86b;
+}
+
+/* Dashboard figure cards: coloured top edge and icon circle, cycling blue → orange → teal */
+.metrics-grid .metric:not(.finance-tile) {
+  border-top: 4px solid var(--logo-blue);
+}
+.metrics-grid .metric:not(.finance-tile):nth-child(3n + 2) {
+  border-top-color: var(--logo-orange);
+}
+.metrics-grid .metric:not(.finance-tile):nth-child(3n) {
+  border-top-color: var(--accent);
+}
+.metrics-grid .metric:not(.finance-tile):nth-child(3n + 1) > div svg {
+  background: var(--logo-blue-soft);
+  color: var(--logo-blue-ink);
+}
+.metrics-grid .metric:not(.finance-tile):nth-child(3n + 2) > div svg {
+  background: var(--logo-orange-soft);
+  color: var(--logo-orange-ink);
+}
+
+/* Public pages: same colour rhythm on cards */
+.content-cards article,
+.home-hours dl div,
+.about-mv-card,
+.about-values-grid article,
+.about-offerings-grid > *,
+.about-serve-grid > *,
+.about-commit-grid > * {
+  border-top: 4px solid var(--logo-blue);
+}
+.content-cards article:nth-child(3n + 2),
+.home-hours dl div:nth-child(3n + 2),
+.about-mv-card:nth-child(3n + 2),
+.about-values-grid article:nth-child(3n + 2),
+.about-offerings-grid > :nth-child(3n + 2),
+.about-serve-grid > :nth-child(3n + 2),
+.about-commit-grid > :nth-child(3n + 2) {
+  border-top-color: var(--logo-orange);
+}
+.content-cards article:nth-child(3n),
+.home-hours dl div:nth-child(3n),
+.about-mv-card:nth-child(3n),
+.about-values-grid article:nth-child(3n),
+.about-offerings-grid > :nth-child(3n),
+.about-serve-grid > :nth-child(3n),
+.about-commit-grid > :nth-child(3n) {
+  border-top-color: var(--accent);
+}
+/* Home figures strip: numbers in the logo colours */
+.home-stats div:nth-child(3n + 1) strong {
+  color: var(--logo-blue-ink);
+}
+.home-stats div:nth-child(3n + 2) strong {
+  color: var(--logo-orange-ink);
+}
+/* Category chips pick up the logo colours on hover */
+.home-chip-row a:nth-child(odd):hover {
+  border-color: var(--logo-blue);
+  color: var(--logo-blue-ink);
+}
+.home-chip-row a:nth-child(even):hover {
+  border-color: var(--logo-orange);
+  color: var(--logo-orange-ink);
+}
