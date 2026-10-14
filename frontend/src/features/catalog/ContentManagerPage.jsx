@@ -6,6 +6,7 @@ import { api, body } from '../../services/api'
 import { Empty, ErrorState, Loading, PageHeading } from '../../components/common/ui'
 import { Input } from '../../components/common/primitives/input'
 import { Button } from '../../components/common/primitives/button'
+import { Trash2 } from 'lucide-react'
 import { useAuth } from '../../context/AuthProvider'
 import { isAdmin } from '../../utils/roles'
 import './content.css'
@@ -52,11 +53,11 @@ export default function ContentManagerPage({ only }) {
       void client.invalidateQueries({ queryKey: ['public-content'] })
     },
   })
-  const archive = useMutation({
+  const deleteContent = useMutation({
     mutationFn: (id) => api(`/staff/content/${id}`, { method: 'DELETE' }),
     onError: (error) => toast.error(error.message),
     onSuccess: () => {
-      toast.success(t('staffContent.archived'))
+      toast.success(only === 'service' ? t('services.deleted', 'Service deleted.') : t('staffContent.deleted', 'Content deleted.'))
       void client.invalidateQueries({ queryKey: ['staff-content'] })
       void client.invalidateQueries({ queryKey: ['public-content'] })
     },
@@ -208,11 +209,27 @@ export default function ContentManagerPage({ only }) {
                 </Button>
                 <Button
                   variant="outline"
+                  className="small"
+                  style={{
+                    color: 'var(--danger, #dc2626)',
+                    borderColor: 'var(--danger, #dc2626)',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
+                  disabled={deleteContent.isPending}
                   onClick={() => {
-                    if (window.confirm(t('staffContent.confirmArchive'))) archive.mutate(item._id)
+                    const itemName = item.title?.en || item.title?.so || item.title?.ar || 'this item'
+                    const confirmText = only === 'service'
+                      ? `Are you sure you want to permanently delete service "${itemName}"?`
+                      : `Are you sure you want to permanently delete "${itemName}"?`
+                    if (window.confirm(confirmText)) {
+                      deleteContent.mutate(item._id)
+                    }
                   }}
                 >
-                  {t('staffContent.archive')}
+                  <Trash2 size={13} />
+                  {t('common.delete', 'Delete')}
                 </Button>
               </div>
             </article>

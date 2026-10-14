@@ -7,7 +7,7 @@
     "dev": "node --watch server.js",
     "start": "node server.js",
     "db:start": "node ../scripts/maintenance/start-local-mongo.js",
-    "bootstrap:admin": "node ../scripts/maintenance/bootstrap-admin.js",
+    "bootstrap:admin": "node bootstrap-admin-runner.js",
     "seed": "node ../scripts/seed/seed.js",
     "backup": "node ../scripts/backup/backup.js",
     "email:check": "node ../scripts/maintenance/check-email.js"

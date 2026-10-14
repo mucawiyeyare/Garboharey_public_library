@@ -91,7 +91,6 @@ export default function AdminDashboard() {
             ['/staff/settings', Settings2, t('nav.settings'), t('ui.dash.settingsText')],
             ['/staff/content', Settings2, t('nav.siteContent'), t('ui.dash.contentText')],
             ['/staff/reports', BarChart3, t('nav.reports'), t('ui.dash.reportsText')],
-            ['/staff/audit', ShieldCheck, t('nav.audit'), t('ui.dash.auditText')],
           ]}
         />
       </section>
@@ -132,9 +131,6 @@ export default function AdminDashboard() {
             <h2>{t('director.recent')}</h2>
             <p className="muted">{t('ui.dash.recentIntro')}</p>
           </div>
-          <Link className="text-link" to="/staff/audit">
-            {t('director.audit')} <ArrowRight size={16} aria-hidden="true" />
-          </Link>
         </div>
         {data.recent.length ? (
           data.recent.map((entry) => (

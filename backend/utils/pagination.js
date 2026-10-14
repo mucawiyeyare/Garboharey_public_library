@@ -14,7 +14,7 @@ export function pagination(req, legacyLimit = 100) {
     paginated,
   }
 }
-export function sendPage(res, items, total, page) {
+export function sendPage(res, items, total, page, extra = {}) {
   res.json(
     page.paginated
       ? {
@@ -23,6 +23,7 @@ export function sendPage(res, items, total, page) {
           page: page.page,
           limit: page.limit,
           pages: Math.max(1, Math.ceil(total / page.limit)),
+          ...extra,
         }
       : items,
   )

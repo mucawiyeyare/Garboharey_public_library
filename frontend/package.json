@@ -29,5 +29,8 @@
     "sonner": "^2.0.8",
     "tailwind-merge": "^3.7.0",
     "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^5.1.4"
   }
 }

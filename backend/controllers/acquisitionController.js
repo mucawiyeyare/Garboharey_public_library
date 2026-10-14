@@ -18,15 +18,40 @@ const acquisitionSchema = z.object({
   notes: z.string().trim().max(1000).default(''),
 })
 
+// Generate a sequential reference: ACQ-YYYYMMDD-XXXX
+async function generateReceiptNo() {
+  const today = new Date().toISOString().slice(0, 10).replace(/-/g, '')
+  const count = await Acquisition.countDocuments({
+    acquiredAt: { $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)) },
+  })
+  return `ACQ-${today}-${String(count + 1).padStart(4, '0')}`
+}
+
+async function generateIncomeRefNo() {
+  const today = new Date().toISOString().slice(0, 10).replace(/-/g, '')
+  const count = await Acquisition.countDocuments({
+    type: 'purchased',
+    acquiredAt: { $gte: new Date(new Date().setUTCHours(0, 0, 0, 0)) },
+  })
+  return `INC-${today}-${String(count + 1).padStart(4, '0')}`
+}
+
 // Record books received. This only keeps count; it never adds books or copies to the catalogue.
 export const postAcquisition = async (req, res) => {
   const input = acquisitionSchema.parse(req.body)
   const purchased = input.type === 'purchased'
+
+  // Auto-generate receipt no. and income ref no. if not supplied
+  const receiptNo = input.reference?.trim() || (await generateReceiptNo())
+  const incomeRefNo = purchased ? await generateIncomeRefNo() : ''
+
   const acquisition = await Acquisition.create({
     ...input,
     cost: purchased ? input.cost : 0,
     currency: purchased ? input.currency : '',
     acquiredAt: input.acquiredAt ?? new Date(),
+    reference: receiptNo,
+    incomeRefNo,
     createdBy: req.user.id,
   })
   await Audit.create({
@@ -37,6 +62,8 @@ export const postAcquisition = async (req, res) => {
   res.status(201).json({
     message: `${input.quantity} ${input.type} book${input.quantity === 1 ? '' : 's'} recorded.`,
     acquisition,
+    receiptNo,
+    incomeRefNo,
   })
 }
 

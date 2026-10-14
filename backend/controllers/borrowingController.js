@@ -63,7 +63,7 @@ export const postList = async (req, res) => {
       name: z.string().trim().optional(),
       phone: z.string().trim().min(1, 'Telephone number is required').optional(),
       telephone: z.string().trim().optional(),
-      borrowerType: z.enum(['regular', 'member', 'librarian', 'admin']).default('regular'),
+      borrowerType: z.enum(['regular', 'member', 'librarian', 'admin', 'institutional']).default('regular'),
       memberId: idSchema.optional().nullable(),
       // One copy, or several copies of the same title borrowed together
       copyId: z.union([idSchema, z.array(idSchema).min(1).max(50)]),

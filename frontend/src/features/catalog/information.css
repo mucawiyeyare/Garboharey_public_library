@@ -394,3 +394,31 @@
 .header-sign-in:hover {
   color: var(--accent);
 }
+
+/* ── Very small phones (≤480px) ── */
+@media (max-width: 480px) {
+  .information-heading h1 {
+    font-size: 30px;
+    letter-spacing: -1px;
+  }
+  .information-split {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding: 30px 0;
+  }
+  .information-split h2 {
+    font-size: 22px;
+  }
+  .join-layout {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 360px) {
+  .information-heading h1 {
+    font-size: 26px;
+  }
+  .public-footer-shell .public-footer-expanded {
+    grid-template-columns: 1fr;
+    padding: 24px 16px 18px;
+  }
+}

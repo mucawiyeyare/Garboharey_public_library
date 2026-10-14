@@ -63,7 +63,11 @@
     "transactions": "Financial Transactions",
     "cashbook": "Cashbook",
     "financeReports": "Financial Reports",
-    "financeSettings": "Finance Settings"
+    "financeSettings": "Finance Settings",
+    "leadershipGovernance": "Leadership & Governance",
+    "ourFounders": "Our Founders",
+    "boardOfDirectors": "Board of Directors",
+    "directorsMessage": "Director's Message"
   },
   "language": {
     "label": "Language",
@@ -199,15 +203,13 @@
     "lookupButton": "Check status",
     "approved": "APPROVED. Check your email for a link to set your password.",
     "rejected": "REJECTED",
-    "requirementsTitle": "Membership requirements",
-    "requirementsIntro": "Before you apply, please note that every member must:",
-    "agree": "I understand and accept the membership requirements above.",
-    "req": {
-      "feeTitle": "Pay the required membership fee",
-      "feeText": "The member must pay the required library membership fee.",
-      "eventsTitle": "Participate in library events",
-      "eventsText": "The member is expected to participate in library events and activities."
-    }
+    "requirementsTitle": "Library Membership Requirements",
+    "requirementsIntro": "Before you apply, please observe the following requirements and code of conduct:",
+    "requirementsNoteTitle": "Important Note:",
+    "requirementsNoteText": "Garbaharey Public Library membership is built on mutual respect, cooperation, and the protection of shared public resources.",
+    "formTitle": "Membership Application Form",
+    "formSubtitle": "Fill in your details below to apply for your library membership card.",
+    "agree": "I understand and agree to all the library membership requirements stated above."
   },
   "staffContent": {
     "title": "Site content",
@@ -1261,10 +1263,13 @@
     "searchHint": "Search title, author, ISBN or type",
     "filter": "Filter",
     "filters": {
-      "all": "All",
+      "all": "All copies",
       "available": "Available",
       "borrowed": "Borrowed",
-      "unavailable": "Not available"
+      "reserved": "Reserved",
+      "damaged": "Damaged",
+      "returned": "Returned",
+      "lost": "Lost / Missing"
     },
     "book": "Book",
     "type": "Type",
@@ -1276,6 +1281,9 @@
       "available": "Available",
       "borrowed": "All borrowed",
       "reserved": "Reserved",
+      "damaged": "Damaged",
+      "lost": "Lost / Missing",
+      "returned": "Returned",
       "none": "No copies"
     },
     "empty": "No books match."

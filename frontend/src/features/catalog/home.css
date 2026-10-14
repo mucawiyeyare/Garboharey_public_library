@@ -709,3 +709,41 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ── Very small phones (≤480px) ── */
+@media (max-width: 480px) {
+  .reader-hero {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    padding: 32px 0 40px;
+  }
+  .reader-hero h1 {
+    font-size: 32px;
+  }
+  .reader-search {
+    flex-wrap: wrap;
+    padding: 10px;
+  }
+  .reader-search input {
+    width: calc(100% - 36px);
+    min-width: 0;
+  }
+  .reader-search .button {
+    width: 100%;
+  }
+  .home-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  .home-stat-value {
+    font-size: 28px;
+  }
+}
+@media (max-width: 360px) {
+  .reader-hero h1 {
+    font-size: 26px;
+  }
+  .home-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}

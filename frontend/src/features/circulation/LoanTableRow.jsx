@@ -113,6 +113,13 @@ export default function LoanTableRow({ loan }) {
         </small>
       </td>
 
+      {/* 3b. Shelf */}
+      <td>
+        <span style={{ fontFamily: 'monospace', fontSize: '0.88em' }}>
+          {loan.copy?.shelf || (loan.copies?.[0]?.shelf) || '—'}
+        </span>
+      </td>
+
       {/* 4. Number of Copies */}
       <td style={{ textAlign: 'center' }}>
         <strong>{copiesCount}</strong>

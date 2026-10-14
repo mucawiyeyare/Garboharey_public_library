@@ -163,11 +163,11 @@ const reports = {
           $group: {
             _id: {
               $dateToString: {
-                format: groupBy === 'day' ? '%Y-%m-%d' : '%Y-%m',
+                format: groupBy === 'day' ? '%Y-%m-%d' : groupBy === 'year' ? '%Y' : '%Y-%m',
                 date: {
                   $dateTrunc: {
                     date: '$createdAt',
-                    unit: groupBy === 'day' ? 'day' : 'month',
+                    unit: groupBy === 'day' ? 'day' : groupBy === 'year' ? 'year' : 'month',
                     timezone: 'UTC',
                   },
                 },
@@ -205,8 +205,8 @@ const reports = {
       return {
         total,
         rows: items.map((loan) => ({
-          member: loan.member?.name,
-          email: loan.member?.email,
+          member: loan.member?.name || loan.borrowerName || 'Guest Borrower',
+          email: loan.member?.email || loan.phone || '—',
           title: loan.book?.title,
           issued: loan.createdAt,
           due: loan.dueAt,
@@ -223,7 +223,7 @@ const reports = {
     async run({ range, groupBy }) {
       const period = (field) => ({
         $dateToString: {
-          format: '%Y-%m-%d',
+          format: groupBy === 'year' ? '%Y' : '%Y-%m-%d',
           date: {
             $dateTrunc: { date: field, unit: groupBy, timezone: 'UTC', startOfWeek: 'monday' },
           },
@@ -269,9 +269,9 @@ const reports = {
       return {
         total,
         rows: items.map((loan) => ({
-          member: loan.member?.name,
+          member: loan.member?.name || loan.borrowerName || 'Guest Borrower',
           title: loan.book?.title,
-          barcode: loan.copy?.barcode,
+          barcode: loan.copy?.barcode || (loan.copies?.[0]?.barcode) || '—',
           issued: loan.createdAt,
           due: loan.dueAt,
           daysOverdue: daysLate(loan.dueAt),
@@ -380,7 +380,7 @@ const reports = {
           { key: 'waived', value: round(sum(['waived'], 'amount')) },
         ],
         rows: items.map((fine) => ({
-          member: fine.member?.name,
+          member: fine.member?.name || fine.loan?.borrowerName || 'Guest Borrower',
           title: fine.loan?.book?.title,
           daysOverdue: fine.daysOverdue,
           amount: fine.amount,
@@ -403,7 +403,7 @@ export async function runReport(req, res) {
       from: date.optional(),
       to: date.optional(),
       q: z.string().max(100).optional(),
-      groupBy: z.enum(['day', 'week', 'month']).default('month'),
+      groupBy: z.enum(['day', 'week', 'month', 'year']).default('month'),
       lang: z.enum(LANGUAGES).catch('en'),
       all: z.enum(['true', 'false']).default('false'),
     })

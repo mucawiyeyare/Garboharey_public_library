@@ -30,43 +30,54 @@ export default function JoinPage() {
         title={t('join.title')}
         intro={t('join.intro')}
       />
-      <div className="container page join-layout">
-        {info.data?.length > 0 && (
-          <section className="content-sections" aria-label={t('join.requirements')}>
-            {info.data.map((item) => (
-              <article key={item._id}>
-                <h2>{item.title}</h2>
-                <Paragraphs text={item.body} />
-              </article>
-            ))}
-          </section>
-        )}
-        {apply.isSuccess ? (
-          <section className="join-status" role="status">
-            <h2>
-              {t('join.statusLabel')}: <strong>{t('join.pending')}</strong>
-            </h2>
-            <p>{t('join.confirmation')}</p>
-            <p className="muted">
-              {t('join.reference')}: {apply.data.reference}
-            </p>
-          </section>
-        ) : (
-          <form
-            className="form-stack join-form"
-            onSubmit={(event) => {
-              event.preventDefault()
-              apply.mutate({
-                ...Object.fromEntries(new FormData(event.currentTarget)),
-                lang: i18n.language,
-              })
-            }}
-          >
-            <MembershipRequirements />
-            <label>
-              {t('join.fullName')}
-              <Input name="fullName" autoComplete="name" required minLength={2} maxLength={100} />
-            </label>
+      <div className="container page">
+        {/* Shuruudaha Xubinnimada Maktabadda - Professional Cards Above Form */}
+        <MembershipRequirements />
+
+        <div className="join-layout" style={{ marginTop: '28px' }}>
+          {info.data?.length > 0 && (
+            <section className="content-sections" aria-label={t('join.requirements')}>
+              {info.data.map((item) => (
+                <article key={item._id}>
+                  <h2>{item.title}</h2>
+                  <Paragraphs text={item.body} />
+                </article>
+              ))}
+            </section>
+          )}
+          {apply.isSuccess ? (
+            <section className="join-status" role="status">
+              <h2>
+                {t('join.statusLabel')}: <strong>{t('join.pending')}</strong>
+              </h2>
+              <p>{t('join.confirmation')}</p>
+              <p className="muted">
+                {t('join.reference')}: {apply.data.reference}
+              </p>
+            </section>
+          ) : (
+            <form
+              className="form-stack join-form"
+              onSubmit={(event) => {
+                event.preventDefault()
+                apply.mutate({
+                  ...Object.fromEntries(new FormData(event.currentTarget)),
+                  lang: i18n.language,
+                })
+              }}
+            >
+              <div style={{ marginBottom: '16px', paddingBottom: '12px', borderBottom: '1px solid var(--line)' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, margin: '0 0 4px' }}>
+                  {t('join.formTitle', 'Foomka Codsiga Xubinnimada')}
+                </h3>
+                <p className="muted" style={{ fontSize: '13px', margin: 0 }}>
+                  {t('join.formSubtitle', 'Buuxi xogtaada hoose si aad u codsato xubinnimada maktabadda.')}
+                </p>
+              </div>
+              <label>
+                {t('join.fullName')}
+                <Input name="fullName" autoComplete="name" required minLength={2} maxLength={100} />
+              </label>
             <div className="form-grid">
               <label>
                 {t('join.phone')}
@@ -138,6 +149,7 @@ export default function JoinPage() {
             </p>
           )}
         </form>
+        </div>
       </div>
     </div>
   )

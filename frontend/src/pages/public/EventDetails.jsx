@@ -18,7 +18,6 @@ import {
 } from 'lucide-react'
 import { api } from '../../services/api'
 import { Paragraphs } from '../../features/catalog/ContentPage'
-import { CONFIRMED_EVENTS } from './eventsData'
 import '../../features/catalog/content.css'
 import '../../features/catalog/events.css'
 
@@ -46,32 +45,24 @@ export default function EventDetailsPage() {
   const formatDate = useFormatDate()
   const [copied, setCopied] = useState(false)
 
-  // 1. Try to find in confirmed local events
-  const localEvent = useMemo(
-    () => CONFIRMED_EVENTS.find((e) => String(e._id) === String(id)),
-    [id],
-  )
-
-  // 2. If not found locally or if mongo ID, query API
+  // Query API for the event
   const apiItem = useQuery({
     queryKey: ['public-content-item', id, i18n.language],
     queryFn: () => api(`/library/content/item/${id}?lang=${i18n.language}`),
-    enabled: !localEvent && Boolean(id?.match(/^[0-9a-fA-F]{24}$/)),
+    enabled: Boolean(id),
     retry: false,
   })
 
   // Determine current active event data
   const event = useMemo(() => {
-    if (localEvent) return localEvent
-
     if (apiItem.data) {
       return {
         _id: apiItem.data._id,
         title: apiItem.data.title,
         category: apiItem.data.category || 'Reading Programs',
         eventDate: apiItem.data.eventDate || apiItem.data.createdAt,
-        time: apiItem.data.time || '10:00 AM – 1:00 PM',
-        location: apiItem.data.location || 'Main Reading Hall, Garbaharey',
+        time: apiItem.data.time || '4:00 PM – 6:00 PM',
+        location: apiItem.data.location || 'Garbaharey Public Library',
         image: apiItem.data.image || '/images/hero-reading-hall.webp',
         fullBody: apiItem.data.body || '',
         shortDesc: apiItem.data.body?.slice(0, 160) || '',
@@ -85,7 +76,7 @@ export default function EventDetailsPage() {
         admission: 'Free admission. Official library card recommended.',
         status:
           apiItem.data.eventDate &&
-          new Date(apiItem.data.eventDate) < new Date('2026-09-01')
+          new Date(apiItem.data.eventDate).getTime() < new Date().setHours(0, 0, 0, 0)
             ? 'past'
             : 'upcoming',
       }

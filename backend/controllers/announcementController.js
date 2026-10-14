@@ -23,6 +23,10 @@ const contentSchema = z.object({
   title: localized(200),
   body: localized(8000),
   eventDate: z.coerce.date().nullable().optional().default(null),
+  time: z.string().trim().optional().default(''),
+  location: z.string().trim().optional().default(''),
+  category: z.string().trim().optional().default('Reading Programs'),
+  image: z.string().trim().optional().default(''),
   featured: z.boolean().optional().default(false),
   published: z.boolean().optional().default(true),
   order: z.coerce.number().int().min(0).optional().default(0),
@@ -45,6 +49,10 @@ const localize = (item, lang) => ({
   title: pick(item.title, lang),
   body: pick(item.body, lang),
   eventDate: item.eventDate,
+  time: item.time || '',
+  location: item.location || '',
+  category: item.category || 'Reading Programs',
+  image: item.image || '',
   featured: item.featured,
   order: item.order,
   createdAt: item.createdAt,
@@ -87,11 +95,10 @@ export const putStaffContent = async (req, res) => {
 
 export const deleteStaffContent = async (req, res) => {
   const id = idSchema.parse(req.params.id)
-  const item = requireRecord(await Content.findOne({ _id: id, archived: false }))
+  const item = requireRecord(await Content.findById(id))
   if (!canManage(req.user, item.kind)) throw new ApiError(403, 'You cannot manage this content')
-  item.archived = true
-  await item.save()
-  await Audit.create({ actor: req.user.id, action: 'content.archived', entity: id })
+  await Content.findByIdAndDelete(id)
+  await Audit.create({ actor: req.user.id, action: 'content.deleted', entity: id })
   res.status(204).end()
 }
 

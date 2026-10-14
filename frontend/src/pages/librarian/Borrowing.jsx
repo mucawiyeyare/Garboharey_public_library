@@ -62,6 +62,7 @@ export default function CirculationPage() {
                   <th>Borrower Name</th>
                   <th>Telephone Number</th>
                   <th>Book</th>
+                  <th>Shelf</th>
                   <th style={{ textAlign: 'center' }}>Copies</th>
                   <th>Borrowing Date</th>
                   <th>Due Date</th>

@@ -270,3 +270,25 @@
     justify-content: center;
   }
 }
+
+/* ── Very small phones (≤480px) ── */
+@media (max-width: 480px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .services-heading {
+    padding: 36px 0 32px;
+  }
+  .services-heading h1 {
+    font-size: 26px;
+  }
+  .service-card {
+    padding: 22px 18px;
+  }
+}
+@media (max-width: 360px) {
+  .services-heading h1 {
+    font-size: 22px;
+  }
+}

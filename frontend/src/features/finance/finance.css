@@ -226,3 +226,35 @@
     font-size: 9px;
   }
 }
+
+/* ── Very small phones (≤480px) ── */
+@media (max-width: 480px) {
+  .finance-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px;
+  }
+  .finance-tile strong {
+    font-size: 18px;
+  }
+  .finance-form {
+    padding: 16px 14px;
+  }
+  .finance-bars {
+    height: 120px;
+    gap: 2px;
+  }
+  .finance-bar-group small {
+    font-size: 8px;
+  }
+}
+@media (max-width: 360px) {
+  .finance-metrics {
+    grid-template-columns: 1fr !important;
+  }
+  .finance-tile strong {
+    font-size: 22px;
+  }
+  .finance-two-col {
+    gap: 14px;
+  }
+}

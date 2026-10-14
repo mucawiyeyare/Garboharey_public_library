@@ -8,6 +8,7 @@ import { PasswordInput } from '../auth/PasswordInput'
 import { MutationFeedback } from '../../components/common/ui'
 import { useAuth } from '../../context/AuthProvider'
 import { isAdmin } from '../../utils/roles'
+
 export default function MemberForm({ member, onSaved, team = false }) {
   const { t } = useTranslation()
   const { user } = useAuth()
@@ -17,11 +18,13 @@ export default function MemberForm({ member, onSaved, team = false }) {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [status, setStatus] = useState(member?.status ?? 'active')
   const [role, setRole] = useState(member?.role ?? (team ? 'librarian' : 'member'))
+
   const action = useAction(
     member ? `/staff/members/${member._id}` : '/staff/members',
     member ? 'PATCH' : 'POST',
     onSaved,
   )
+
   return (
     <form
       className="form-stack"
@@ -31,11 +34,33 @@ export default function MemberForm({ member, onSaved, team = false }) {
           toast.error(t('auth.mismatch'))
           return
         }
+        if (member && password && password !== confirmPassword) {
+          toast.error(t('auth.mismatch'))
+          return
+        }
         action.mutate(
-          member ? { name, status, role } : { name, email, password, ...(team ? { role } : {}) },
+          member
+            ? { name, email, status, role, ...(password ? { password } : {}) }
+            : { name, email, password, ...(team ? { role } : {}) },
         )
       }}
     >
+      {/* Member ID — shown when editing an existing record */}
+      {member && (
+        <label>
+          {t('ui.members.memberId', 'Member ID')}
+          <Input
+            value={member._id}
+            readOnly
+            aria-readonly="true"
+            style={{ fontFamily: 'monospace', fontSize: '0.85em' }}
+          />
+          <small className="muted">
+            {t('ui.members.memberIdHint', 'System identifier — read only')}
+          </small>
+        </label>
+      )}
+
       <label>
         {t('auth.fullName')}
         <Input
@@ -47,42 +72,49 @@ export default function MemberForm({ member, onSaved, team = false }) {
           onChange={(event) => setName(event.target.value)}
         />
       </label>
+
       <label>
         {t('auth.email')}
         <Input
           required
           type="email"
-          readOnly={!!member}
           placeholder={team ? 'staff@example.com' : 'member@example.com'}
           value={email}
           onChange={(event) => setEmail(event.target.value)}
         />
       </label>
-      {!member && (
-        <label>
-          {t('ui.members.initialPassword')}
-          <PasswordInput
-            aria-label={t('ui.members.initialPassword')}
-            placeholder={t('auth.newPasswordPlaceholder')}
-            type="password"
-            required
-            minLength={12}
-            maxLength={128}
-            autoComplete="new-password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
-          <small className="muted">{t('ui.members.passwordHint')}</small>
-        </label>
-      )}
-      {!member && (
+
+      {/* Password — required on create, optional on edit */}
+      <label>
+        {member
+          ? t('ui.members.newPassword', 'New Password (leave blank to keep current)')
+          : t('ui.members.initialPassword')}
+        <PasswordInput
+          aria-label={t('ui.members.initialPassword')}
+          placeholder={
+            member
+              ? t('ui.members.passwordOptional', 'Leave blank to keep current password')
+              : t('auth.newPasswordPlaceholder')
+          }
+          type="password"
+          required={!member}
+          minLength={12}
+          maxLength={128}
+          autoComplete="new-password"
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
+        />
+        <small className="muted">{t('ui.members.passwordHint')}</small>
+      </label>
+
+      {(!member || password) && (
         <label>
           {t('auth.confirmPassword')}
           <PasswordInput
             aria-label={t('auth.confirmPassword')}
             placeholder={t('auth.confirmPlaceholder')}
             autoComplete="new-password"
-            required
+            required={!member || !!password}
             minLength={12}
             maxLength={128}
             value={confirmPassword}
@@ -90,24 +122,33 @@ export default function MemberForm({ member, onSaved, team = false }) {
           />
         </label>
       )}
+
       {!member && team && (
         <label>
           {t('ui.members.role')}
           <select value={role} onChange={(event) => setRole(event.target.value)}>
             <option value="librarian">{t('ui.roles.librarian')}</option>
             <option value="director">{t('ui.roles.director')}</option>
-            <option value="admin">{t('ui.roles.admin')}</option>
+            {isAdmin(user) && <option value="admin">{t('ui.roles.admin')}</option>}
           </select>
         </label>
       )}
+
       {member && (
         <>
           <label>
             {t('ui.members.status')}
-            <select value={status} onChange={(event) => setStatus(event.target.value)}>
+            <select
+              disabled={user?.role === 'librarian'}
+              value={status}
+              onChange={(event) => setStatus(event.target.value)}
+            >
               <option value="active">{t('taxonomy.active')}</option>
               <option value="suspended">{t('ui.members.suspended')}</option>
             </select>
+            {user?.role === 'librarian' && (
+              <small className="muted">{t('ui.members.librarianStatusNote', 'Librarians have limited edit permissions. Contact Director or Administrator to suspend accounts.')}</small>
+            )}
           </label>
           <label>
             {t('ui.members.role')}
@@ -119,11 +160,12 @@ export default function MemberForm({ member, onSaved, team = false }) {
               <option value="member">{t('ui.roles.member')}</option>
               <option value="librarian">{t('ui.roles.librarian')}</option>
               <option value="director">{t('ui.roles.director')}</option>
-              <option value="admin">{t('ui.roles.admin')}</option>
+              {isAdmin(user) && <option value="admin">{t('ui.roles.admin')}</option>}
             </select>
           </label>
         </>
       )}
+
       <MutationFeedback error={action.error} />
       <Button className="button" disabled={action.isPending}>
         {action.isPending

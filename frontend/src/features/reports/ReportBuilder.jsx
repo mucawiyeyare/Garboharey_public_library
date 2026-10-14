@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
-import { Download, Printer } from 'lucide-react'
+import { Download, Filter, Printer, RefreshCw } from 'lucide-react'
 import { api } from '../../services/api'
 import { csvDownload } from '../../utils/csv'
 import { Input } from '../../components/common/primitives/input'
@@ -10,56 +10,113 @@ import { Button } from '../../components/common/primitives/button'
 import Pagination from '../../components/common/Pagination'
 import { Empty, ErrorState, Loading } from '../../components/common/ui'
 
-// Which controls each report supports: date range, member search, grouping periods.
-const groups = {
-  books: {
-    'books-by-category': {},
-    'books-by-author': {},
-    'books-by-publisher': {},
-    inventory: {},
-    'lost-damaged': { dates: true },
+// 5 recommended categories from specifications:
+// 1. Collection & Inventory: Book titles, physical copies, availability, damaged/lost copies, acquisition history
+// 2. Members: Registered members, active members, pending applications, membership growth
+// 3. Circulation: Loans issued, returns, current loans, borrowing history, renewals
+// 4. Overdue & Reservations: Overdue loans, days overdue, reservation outcomes, waiting reservations
+// 5. Popular Books: Most borrowed books, popular categories, borrowing trends
+const CATEGORIES = {
+  'Collection & Inventory': {
+    label: 'Collection & Inventory',
+    reports: {
+      'books-by-category': { label: 'Book Titles by Category', dates: false },
+      'books-by-author': { label: 'Book Titles by Author', dates: false },
+      'books-by-publisher': { label: 'Book Titles by Publisher', dates: false },
+      inventory: { label: 'Physical Copies & Availability', dates: false },
+      'lost-damaged': { label: 'Damaged / Lost Copies', dates: true },
+    },
   },
-  members: {
-    'members-summary': {},
-    'membership-growth': { dates: true, groupBy: ['month', 'day'] },
-    'member-history': { dates: true, search: true },
+  Members: {
+    label: 'Members',
+    reports: {
+      'members-summary': { label: 'Registered Members & Application Status', dates: false },
+      'membership-growth': {
+        label: 'Membership Growth',
+        dates: true,
+        groupBy: ['year', 'month', 'day'],
+      },
+      'member-history': { label: 'Member Borrowing History', dates: true, search: true },
+    },
   },
-  borrowing: {
-    'borrowing-by-period': { dates: true, groupBy: ['month', 'week', 'day'] },
-    overdue: { dates: true },
-    'most-borrowed': { dates: true },
-    'popular-categories': { dates: true },
-    'reservations-summary': { dates: true },
+  Circulation: {
+    label: 'Circulation',
+    reports: {
+      'borrowing-by-period': {
+        label: 'Loans Issued & Returns',
+        dates: true,
+        groupBy: ['year', 'month', 'week', 'day'],
+      },
+      'member-history': { label: 'Current Loans & Borrowing History', dates: true, search: true },
+      'most-borrowed': { label: 'Borrowing Volume by Book', dates: true },
+    },
   },
-  financial: {
-    fines: { dates: true, search: true },
+  'Overdue & Reservations': {
+    label: 'Overdue & Reservations',
+    reports: {
+      overdue: { label: 'Overdue Loans & Days Overdue', dates: true },
+      'reservations-summary': { label: 'Reservation Outcomes & Waiting Reservations', dates: true },
+      fines: { label: 'Fines & Collections', dates: true, search: true },
+    },
+  },
+  'Popular Books': {
+    label: 'Popular Books',
+    reports: {
+      'most-borrowed': { label: 'Most Borrowed Books', dates: true },
+      'popular-categories': { label: 'Popular Categories', dates: true },
+      'borrowing-by-period': {
+        label: 'Borrowing Trends',
+        dates: true,
+        groupBy: ['year', 'month', 'week', 'day'],
+      },
+    },
   },
 }
+
 const dateColumns = ['date', 'issued', 'due', 'returned']
 const moneyColumns = ['amount', 'paid', 'fineSoFar']
 
 export default function ReportBuilder() {
   const { t, i18n } = useTranslation()
-  const [group, setGroup] = useState('borrowing')
-  const [type, setType] = useState('borrowing-by-period')
+
+  // Form input state
+  const [category, setCategory] = useState('Collection & Inventory')
+  const [type, setType] = useState('inventory')
   const [from, setFrom] = useState('')
   const [to, setTo] = useState('')
   const [q, setQ] = useState('')
   const [groupBy, setGroupBy] = useState('month')
   const [page, setPage] = useState(1)
   const [busy, setBusy] = useState(false)
-  const options = groups[group][type] ?? {}
+
+  // Applied filter state (triggers query)
+  const [appliedFilters, setAppliedFilters] = useState({
+    type: 'inventory',
+    from: '',
+    to: '',
+    q: '',
+    groupBy: 'month',
+  })
+
+  const categoryDef = CATEGORIES[category]
+  const options = categoryDef?.reports[type] ?? {}
   const invalidRange = from && to && from > to
+
+  const activeOptions = CATEGORIES[category]?.reports[appliedFilters.type] ?? {}
+
   const params = new URLSearchParams({
     lang: i18n.language,
-    groupBy: options.groupBy?.includes(groupBy) ? groupBy : (options.groupBy?.[0] ?? 'month'),
-    ...(options.dates && from ? { from } : {}),
-    ...(options.dates && to ? { to } : {}),
-    ...(options.search && q ? { q } : {}),
+    groupBy: activeOptions.groupBy?.includes(appliedFilters.groupBy)
+      ? appliedFilters.groupBy
+      : (activeOptions.groupBy?.[0] ?? 'month'),
+    ...(activeOptions.dates && appliedFilters.from ? { from: appliedFilters.from } : {}),
+    ...(activeOptions.dates && appliedFilters.to ? { to: appliedFilters.to } : {}),
+    ...(activeOptions.search && appliedFilters.q ? { q: appliedFilters.q } : {}),
   })
+
   const report = useQuery({
-    queryKey: ['report-run', type, params.toString(), page],
-    queryFn: () => api(`/staff/reports/run/${type}?${params}&page=${page}&limit=25`),
+    queryKey: ['report-run', appliedFilters.type, params.toString(), page],
+    queryFn: () => api(`/staff/reports/run/${appliedFilters.type}?${params}&page=${page}&limit=25`),
     enabled: !invalidRange,
   })
 
@@ -69,168 +126,251 @@ export default function ReportBuilder() {
           new Date(value),
         )
       : '—'
+
   const cell = (column, value) => {
     if (value === null || value === undefined || value === '')
-      return column === 'returned' ? '—' : t('reports.none')
+      return column === 'returned' ? '—' : t('reports.none', '—')
     if (dateColumns.includes(column)) return date(value)
     if (column === 'status')
       return t(`status.${value}`, { defaultValue: String(value).replaceAll('_', ' ') })
-    if (column === 'metric') return t(`reports.metrics.${value}`)
+    if (column === 'metric') return t(`reports.metrics.${value}`, { defaultValue: value })
     if (moneyColumns.includes(column)) return Number(value).toFixed(2)
     if (typeof value === 'number') return value.toLocaleString(i18n.language)
     return value
   }
+
   const plain = (column, value) => {
     if (dateColumns.includes(column)) return value ? new Date(value).toISOString().slice(0, 10) : ''
     if (column === 'status') return t(`status.${value}`, { defaultValue: String(value ?? '') })
-    if (column === 'metric') return t(`reports.metrics.${value}`)
+    if (column === 'metric') return t(`reports.metrics.${value}`, { defaultValue: value ?? '' })
     return value ?? ''
   }
-  const reset = () => setPage(1)
+
+  const handleApplyFilters = () => {
+    setPage(1)
+    setAppliedFilters({
+      type,
+      from,
+      to,
+      q,
+      groupBy,
+    })
+  }
+
   const exportCsv = async () => {
     setBusy(true)
     try {
-      const all = await api(`/staff/reports/run/${type}?${params}&all=true`)
+      const all = await api(`/staff/reports/run/${appliedFilters.type}?${params}&all=true`)
       csvDownload(
-        `${type}-report.csv`,
-        all.columns.map((column) => t(`reports.cols.${column}`)),
+        `${appliedFilters.type}-report.csv`,
+        all.columns.map((column) => t(`reports.cols.${column}`, { defaultValue: column })),
         all.rows.map((row) => all.columns.map((column) => plain(column, row[column]))),
       )
-      toast.success(t('reports.exported'))
+      toast.success(t('reports.exported', 'Exported successfully'))
     } catch (error) {
       toast.error(error.message)
     } finally {
       setBusy(false)
     }
   }
-  const rangeText = [from && `${t('reports.from')} ${from}`, to && `${t('reports.to')} ${to}`]
+
+  const rangeText = [
+    appliedFilters.from && `${t('reports.from', 'From')} ${appliedFilters.from}`,
+    appliedFilters.to && `${t('reports.to', 'To')} ${appliedFilters.to}`,
+  ]
     .filter(Boolean)
     .join(' · ')
+
+  // When changing category, auto-select the first report in that category
+  const handleCategoryChange = (next) => {
+    setCategory(next)
+    const firstReport = Object.keys(CATEGORIES[next]?.reports ?? {})[0]
+    if (firstReport) {
+      setType(firstReport)
+      setAppliedFilters((prev) => ({ ...prev, type: firstReport }))
+    }
+    setPage(1)
+  }
 
   return (
     <section className="panel report-builder">
       <div className="section-heading compact no-print">
         <div>
-          <h2>{t('reports.builder')}</h2>
-          <p className="muted">{t('reports.builderIntro')}</p>
+          <h2>{t('reports.builder', 'Report Builder')}</h2>
+          <p className="muted">
+            {t(
+              'reports.builderIntro',
+              'Put report selection and filters in one clear section: select category, specific report, date range, and grouping.',
+            )}
+          </p>
         </div>
       </div>
-      <form
-        className="form-stack export-fields no-print"
-        onSubmit={(event) => event.preventDefault()}
+
+      {/* ── Unified Report Selection & Filters Section ── */}
+      <div
+        className="report-selection-filters-panel no-print"
+        style={{
+          background: 'var(--soft)',
+          border: '1px solid var(--border)',
+          borderRadius: '10px',
+          padding: '1.25rem',
+          marginBottom: '1.5rem',
+        }}
       >
-        <label>
-          {t('reports.group')}
-          <select
-            value={group}
-            onChange={(event) => {
-              const next = event.target.value
-              setGroup(next)
-              setType(Object.keys(groups[next])[0])
-              reset()
-            }}
-          >
-            {Object.keys(groups).map((key) => (
-              <option key={key} value={key}>
-                {t(`reports.groups.${key}`)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label>
-          {t('reports.report')}
-          <select
-            value={type}
-            onChange={(event) => {
-              setType(event.target.value)
-              reset()
-            }}
-          >
-            {Object.keys(groups[group]).map((key) => (
-              <option key={key} value={key}>
-                {t(`reports.types.${key}`)}
-              </option>
-            ))}
-          </select>
-        </label>
-        {options.dates && (
-          <>
-            <label>
-              {t('reports.from')}
-              <Input
-                type="date"
-                value={from}
-                max={to || undefined}
-                onChange={(event) => {
-                  setFrom(event.target.value)
-                  reset()
-                }}
-              />
-            </label>
-            <label>
-              {t('reports.to')}
-              <Input
-                type="date"
-                value={to}
-                min={from || undefined}
-                onChange={(event) => {
-                  setTo(event.target.value)
-                  reset()
-                }}
-              />
-            </label>
-          </>
-        )}
-        {options.groupBy && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault()
+            handleApplyFilters()
+          }}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))',
+            gap: '1rem',
+            alignItems: 'end',
+          }}
+        >
+          {/* 1. Report category */}
           <label>
-            {t('reports.groupBy')}
+            <strong style={{ display: 'block', marginBottom: '4px', fontSize: '13px' }}>
+              <Filter size={13} style={{ verticalAlign: 'middle', marginRight: '4px' }} />
+              {t('reports.category', 'Report Category')}
+            </strong>
             <select
-              value={options.groupBy.includes(groupBy) ? groupBy : options.groupBy[0]}
-              onChange={(event) => {
-                setGroupBy(event.target.value)
-                reset()
-              }}
+              value={category}
+              onChange={(event) => handleCategoryChange(event.target.value)}
             >
-              {options.groupBy.map((key) => (
+              {Object.entries(CATEGORIES).map(([key, cat]) => (
                 <option key={key} value={key}>
-                  {t(`reports.by.${key}`)}
+                  {cat.label}
                 </option>
               ))}
             </select>
           </label>
-        )}
-        {options.search && (
-          <label>
-            {t('reports.search')}
-            <Input
-              value={q}
-              maxLength={100}
-              placeholder={t('reports.searchPlaceholder')}
-              onChange={(event) => {
-                setQ(event.target.value)
-                reset()
-              }}
-            />
-          </label>
-        )}
-        <div className="button-row">
-          <Button type="button" disabled={busy || !!invalidRange} onClick={() => void exportCsv()}>
-            <Download size={17} />
-            {t('reports.exportCsv')}
-          </Button>
-          <Button type="button" variant="outline" onClick={() => window.print()}>
-            <Printer size={17} />
-            {t('reports.print')}
-          </Button>
-        </div>
-        {invalidRange && <span className="form-error">{t('reports.badRange')}</span>}
-      </form>
 
+          {/* 2. Specific report */}
+          <label>
+            <strong style={{ display: 'block', marginBottom: '4px', fontSize: '13px' }}>
+              {t('reports.report', 'Specific Report')}
+            </strong>
+            <select
+              value={type}
+              onChange={(event) => {
+                const nextType = event.target.value
+                setType(nextType)
+                setAppliedFilters((prev) => ({ ...prev, type: nextType }))
+                setPage(1)
+              }}
+            >
+              {Object.entries(categoryDef?.reports ?? {}).map(([key, rep]) => (
+                <option key={key} value={key}>
+                  {rep.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          {/* 3. Start date and end date */}
+          {options.dates && (
+            <>
+              <label>
+                <strong style={{ display: 'block', marginBottom: '4px', fontSize: '13px' }}>
+                  {t('reports.from', 'Start Date')}
+                </strong>
+                <Input
+                  type="date"
+                  value={from}
+                  max={to || undefined}
+                  onChange={(event) => setFrom(event.target.value)}
+                />
+              </label>
+              <label>
+                <strong style={{ display: 'block', marginBottom: '4px', fontSize: '13px' }}>
+                  {t('reports.to', 'End Date')}
+                </strong>
+                <Input
+                  type="date"
+                  value={to}
+                  min={from || undefined}
+                  onChange={(event) => setTo(event.target.value)}
+                />
+              </label>
+            </>
+          )}
+
+          {/* 4. Group results by day, week, month, or year */}
+          {options.groupBy && (
+            <label>
+              <strong style={{ display: 'block', marginBottom: '4px', fontSize: '13px' }}>
+                {t('reports.groupBy', 'Group Results By')}
+              </strong>
+              <select
+                value={options.groupBy.includes(groupBy) ? groupBy : options.groupBy[0]}
+                onChange={(event) => setGroupBy(event.target.value)}
+              >
+                {options.groupBy.map((key) => (
+                  <option key={key} value={key}>
+                    {t(`reports.by.${key}`, key.charAt(0).toUpperCase() + key.slice(1))}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+
+          {/* 5. Filter by Member / Search */}
+          {options.search && (
+            <label>
+              <strong style={{ display: 'block', marginBottom: '4px', fontSize: '13px' }}>
+                {t('reports.search', 'Filter by Member')}
+              </strong>
+              <Input
+                value={q}
+                maxLength={100}
+                placeholder={t('reports.searchPlaceholder', 'Name or email…')}
+                onChange={(event) => setQ(event.target.value)}
+              />
+            </label>
+          )}
+
+          {/* 6. Action buttons: Apply filters + Export CSV / Print or save as PDF */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <strong style={{ fontSize: '13px' }}>{t('reports.actions', 'Actions')}</strong>
+            <div className="button-row" style={{ flexWrap: 'wrap', gap: '6px' }}>
+              <Button type="submit" className="button" disabled={busy || !!invalidRange}>
+                <RefreshCw size={15} style={{ marginRight: '4px' }} />
+                {t('reports.apply', 'Apply Filters')}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                disabled={busy || !!invalidRange}
+                onClick={() => void exportCsv()}
+              >
+                <Download size={15} style={{ marginRight: '4px' }} />
+                {t('reports.exportCsv', 'Export CSV')}
+              </Button>
+              <Button type="button" variant="outline" onClick={() => window.print()}>
+                <Printer size={15} style={{ marginRight: '4px' }} />
+                {t('reports.print', 'Print / PDF')}
+              </Button>
+            </div>
+            {invalidRange && (
+              <span className="form-error">
+                {t('reports.badRange', 'Start date must be before end date')}
+              </span>
+            )}
+          </div>
+        </form>
+      </div>
+
+      {/* Print header */}
       <div className="print-only">
-        <h2>{t(`reports.types.${type}`)}</h2>
+        <h2>{activeOptions.label ?? appliedFilters.type}</h2>
+        <p>{category}</p>
         {rangeText && <p>{rangeText}</p>}
         <p>{new Date().toLocaleString(i18n.language)}</p>
       </div>
+
+      {/* ── Results Table & Metrics ── */}
       {report.isPending && !invalidRange ? (
         <Loading />
       ) : report.error ? (
@@ -242,7 +382,7 @@ export default function ReportBuilder() {
               {report.data.summary.map((item) => (
                 <div className="metric" key={item.key}>
                   <div>
-                    <span>{t(`reports.summary.${item.key}`)}</span>
+                    <span>{t(`reports.summary.${item.key}`, item.key)}</span>
                   </div>
                   <strong>{item.value.toFixed(2)}</strong>
                 </div>
@@ -255,7 +395,7 @@ export default function ReportBuilder() {
                 <thead>
                   <tr>
                     {report.data.columns.map((column) => (
-                      <th key={column}>{t(`reports.cols.${column}`)}</th>
+                      <th key={column}>{t(`reports.cols.${column}`, { defaultValue: column })}</th>
                     ))}
                   </tr>
                 </thead>
@@ -271,7 +411,7 @@ export default function ReportBuilder() {
               </table>
             </div>
           ) : (
-            <Empty title={t('reports.empty')} />
+            <Empty title={t('reports.empty', 'No data for this report')} />
           )}
           <div className="no-print">
             <Pagination

@@ -12,10 +12,30 @@ const localDate = (offsetDays = 0) =>
   new Date(Date.now() + offsetDays * 86400000 + 3 * 3600000).toISOString().slice(0, 10)
 
 const BORROWER_TYPES = [
-  { id: 'regular', label: 'Regular Borrower', desc: 'No system account required' },
-  { id: 'member', label: 'Member', desc: 'Registered system user' },
-  { id: 'librarian', label: 'Librarian', desc: 'Staff system user' },
-  { id: 'admin', label: 'Admin', desc: 'Administrator system user' },
+  {
+    id: 'member',
+    label: 'Registered Member',
+    desc: 'Approved library member',
+    requiresAccount: true,
+  },
+  {
+    id: 'regular',
+    label: 'Guest / Non-member',
+    desc: 'Visitor under library policy',
+    requiresAccount: false,
+  },
+  {
+    id: 'librarian',
+    label: 'Library Staff',
+    desc: 'Employee borrowing under staff rules',
+    requiresAccount: true,
+  },
+  {
+    id: 'institutional',
+    label: 'Institutional Borrower',
+    desc: 'School or organization (approved)',
+    requiresAccount: false,
+  },
 ]
 
 export default function IssueLoanForm({ onIssued }) {
@@ -36,8 +56,9 @@ export default function IssueLoanForm({ onIssued }) {
   const [quantity, setQuantity] = useState(1)
   const [returnDate, setReturnDate] = useState('')
 
-  // Query registered users when type is member, librarian, or admin
-  const isRegisteredType = borrowerType !== 'regular'
+  // Query registered users when type requires an account
+  const currentType = BORROWER_TYPES.find((t) => t.id === borrowerType)
+  const isRegisteredType = currentType?.requiresAccount ?? false
   const registeredUsers = useQuery({
     queryKey: ['staff-borrowers', borrowerType, userSearch],
     queryFn: () =>

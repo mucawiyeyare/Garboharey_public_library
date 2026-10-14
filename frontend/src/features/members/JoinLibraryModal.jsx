@@ -125,7 +125,7 @@ export default function JoinLibraryModal({ open, onOpenChange }) {
             </div>
           ) : (
             <form className="form-stack join-form space-y-3" onSubmit={handleSubmit}>
-              <MembershipRequirements sticky />
+              <MembershipRequirements compact />
               <div>
                 <label className="block text-sm font-medium mb-1">
                   {t('join.fullName', 'Full Name')} <span className="text-red-500">*</span>

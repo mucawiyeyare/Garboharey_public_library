@@ -46,14 +46,22 @@ export const getBooks = async (req, res) => {
   // Attach accurate copy counts (total, borrowed, reserved, available) and formatted categoryName to each book
   const bookObjectIds = items.map((b) => new mongoose.Types.ObjectId(b._id))
 
-  const [copyStats, loanStats, reservationStats] = await Promise.all([
+  const [copyStats, copyStatusStats, loanStats, returnedLoanStats, reservationStats] = await Promise.all([
     Copy.aggregate([
       { $match: { book: { $in: bookObjectIds }, status: { $ne: 'retired' } } },
       { $group: { _id: '$book', total: { $sum: 1 } } },
     ]),
+    Copy.aggregate([
+      { $match: { book: { $in: bookObjectIds } } },
+      { $group: { _id: { book: '$book', status: '$status' }, count: { $sum: 1 } } },
+    ]),
     Loan.aggregate([
       { $match: { book: { $in: bookObjectIds }, returnedAt: null, status: { $in: ['active', 'overdue'] } } },
       { $group: { _id: '$book', borrowed: { $sum: { $ifNull: ['$numberOfCopies', 1] } } } },
+    ]),
+    Loan.aggregate([
+      { $match: { book: { $in: bookObjectIds }, returnedAt: { $ne: null } } },
+      { $group: { _id: '$book', returned: { $sum: { $ifNull: ['$numberOfCopies', 1] } } } },
     ]),
     Reservation.aggregate([
       { $match: { book: { $in: bookObjectIds }, status: { $in: ['pending', 'waiting'] } } },
@@ -63,19 +71,33 @@ export const getBooks = async (req, res) => {
 
   const totalMap = new Map(copyStats.map((s) => [String(s._id), s.total]))
   const borrowedMap = new Map(loanStats.map((s) => [String(s._id), s.borrowed]))
+  const returnedMap = new Map(returnedLoanStats.map((s) => [String(s._id), s.returned]))
   const reservedMap = new Map(reservationStats.map((s) => [String(s._id), s.reserved]))
+  const statusCountsMap = new Map()
+  for (const s of copyStatusStats) {
+    if (s._id?.book && s._id?.status) {
+      statusCountsMap.set(`${String(s._id.book)}_${s._id.status}`, s.count)
+    }
+  }
 
   for (const item of items) {
-    const total = totalMap.get(String(item._id)) || 0
-    const borrowed = borrowedMap.get(String(item._id)) || 0
-    const reserved = reservedMap.get(String(item._id)) || 0
-    const available = Math.max(0, total - borrowed - reserved)
+    const idStr = String(item._id)
+    const total = totalMap.get(idStr) || 0
+    const borrowed = borrowedMap.get(idStr) || 0
+    const reserved = reservedMap.get(idStr) || 0
+    const returned = returnedMap.get(idStr) || 0
+    const damaged = statusCountsMap.get(`${idStr}_damaged`) || 0
+    const lost = statusCountsMap.get(`${idStr}_lost`) || 0
+    const available = Math.max(0, total - borrowed - reserved - damaged - lost)
 
     item.copies = {
       total,
+      available,
       borrowed,
       reserved,
-      available,
+      damaged,
+      returned,
+      lost,
     }
     if (item.category && item.category.name) {
       item.categoryName =

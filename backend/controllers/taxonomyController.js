@@ -154,25 +154,85 @@ export const deleteAuthor = async (req, res) => {
 
 // ── Covers (Images) ────────────────────────────────────────────────────────
 export const postCover = async (req, res) => {
-  const contentType = req.headers['content-type'] || 'image/jpeg'
-  const chunks = []
-  req.on('data', (chunk) => chunks.push(chunk))
-  req.on('end', async () => {
-    try {
-      const buffer = Buffer.concat(chunks)
-      if (!buffer.length) {
-        return res.status(400).json({ message: 'Empty image upload' })
+  try {
+    let buffer = null
+    let contentType = req.headers['content-type'] || 'image/jpeg'
+
+    // Check if JSON body with base64 payload
+    if (req.body && (req.body.data || req.body.image || req.body.base64)) {
+      const raw = req.body.data || req.body.image || req.body.base64
+      if (typeof raw === 'string') {
+        const match = raw.match(/^data:([^;]+);base64,(.*)$/)
+        if (match) {
+          contentType = match[1]
+          buffer = Buffer.from(match[2], 'base64')
+        } else {
+          buffer = Buffer.from(raw, 'base64')
+        }
+      }
+    } else if (Buffer.isBuffer(req.body)) {
+      buffer = req.body
+    }
+
+    if (buffer && buffer.length) {
+      if (buffer.length > 10 * 1024 * 1024) {
+        return res.status(413).json({ message: 'The image upload is too large. Images must be under 10 MB.' })
       }
       const cover = await Cover.create({
         data: buffer,
         contentType,
         size: buffer.length,
       })
-      res.status(201).json({ coverId: String(cover._id) })
-    } catch (err) {
+      return res.status(201).json({ coverId: String(cover._id) })
+    }
+
+    // Fallback: stream data if not already consumed by a body parser
+    if (req.readableEnded) {
+      return res.status(400).json({ message: 'Empty image upload' })
+    }
+
+    const chunks = []
+    let totalSize = 0
+    let aborted = false
+
+    req.on('data', (chunk) => {
+      if (aborted) return
+      totalSize += chunk.length
+      if (totalSize > 10 * 1024 * 1024) {
+        aborted = true
+        return res.status(413).json({ message: 'The image upload is too large. Images must be under 10 MB.' })
+      }
+      chunks.push(chunk)
+    })
+
+    req.on('end', async () => {
+      if (aborted) return
+      try {
+        const streamBuf = Buffer.concat(chunks)
+        if (!streamBuf.length) {
+          return res.status(400).json({ message: 'Empty image upload' })
+        }
+        const cover = await Cover.create({
+          data: streamBuf,
+          contentType: req.headers['content-type'] || 'image/jpeg',
+          size: streamBuf.length,
+        })
+        res.status(201).json({ coverId: String(cover._id) })
+      } catch (err) {
+        res.status(500).json({ message: err.message })
+      }
+    })
+
+    req.on('error', (err) => {
+      if (!res.headersSent) {
+        res.status(500).json({ message: err.message })
+      }
+    })
+  } catch (err) {
+    if (!res.headersSent) {
       res.status(500).json({ message: err.message })
     }
-  })
+  }
 }
 
 export const getCover = async (req, res) => {
@@ -185,9 +245,15 @@ export const getCover = async (req, res) => {
     if (!cover || !cover.data) {
       return res.status(404).end()
     }
+    const buffer = Buffer.isBuffer(cover.data)
+      ? cover.data
+      : cover.data.buffer
+      ? cover.data.buffer
+      : Buffer.from(cover.data)
     res.setHeader('Content-Type', cover.contentType || 'image/jpeg')
+    res.setHeader('Content-Length', buffer.length)
     res.setHeader('Cache-Control', 'public, max-age=86400, immutable')
-    res.send(cover.data)
+    res.end(buffer)
   } catch {
     res.status(404).end()
   }
@@ -196,10 +262,10 @@ export const getCover = async (req, res) => {
 // ── Library Settings ───────────────────────────────────────────────────────
 let cachedSettings = {
   name: 'Garbaharey Public Library',
-  email: 'info@garbaharey-library.org',
-  phone: '+252 61 1234567',
+  email: 'garbohaarreypubliclibrary@gmail.com',
+  phone: '+252 61 1317333',
   address: 'Main Street, Garbaharey, Gedo, Somalia',
-  hours: 'Saturday – Thursday: 8:00 AM – 6:00 PM',
+  hours: 'Saturday – Thursday: 4:00 PM – 6:00 PM',
   timezone: 'Africa/Mogadishu',
   logoId: null,
 }

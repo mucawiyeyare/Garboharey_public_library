@@ -20,6 +20,8 @@ export const Acquisition = mongoose.model(
       currency: { type: String, default: '' },
       acquiredAt: { type: Date, default: Date.now },
       reference: { type: String, default: '' },
+      // Auto-generated income reference number for purchased acquisitions (INC-YYYYMMDD-XXXX)
+      incomeRefNo: { type: String, default: '' },
       notes: { type: String, default: '' },
       // Only set on older records created when acquisitions also added copies
       book: { type: Schema.Types.ObjectId, ref: 'Book', default: null },

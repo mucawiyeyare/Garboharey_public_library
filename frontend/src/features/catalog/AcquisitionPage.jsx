@@ -80,7 +80,11 @@ function RecordForm() {
       }),
     onError: (error) => toast.error(error.message, { id: error.message, duration: 7000 }),
     onSuccess: (data) => {
-      toast.success(data.message)
+      const extra = [
+        data.receiptNo && `Receipt: ${data.receiptNo}`,
+        data.incomeRefNo && `Income Ref: ${data.incomeRefNo}`,
+      ].filter(Boolean).join(' · ')
+      toast.success(extra ? `${data.message} ${extra}` : data.message)
       setForm(blank())
       void client.invalidateQueries({ queryKey: ['acquisitions'] })
       void client.invalidateQueries({ queryKey: ['acquisition-summary'] })
@@ -191,12 +195,16 @@ function RecordForm() {
           </>
         )}
         <label>
-          {label('reference', 'Receipt / invoice no.')}
+          {label('reference', 'Receipt / Invoice No.')}
           <Input
             maxLength={100}
+            placeholder={label('referenceHint', 'Leave blank to auto-generate')}
             value={form.reference}
             onChange={(e) => set({ reference: e.target.value })}
           />
+          <small className="muted">
+            {label('referenceAuto', 'Auto-generated as ACQ-YYYYMMDD-XXXX if left blank. Purchased records also get an Income Ref No. (INC-…).')}
+          </small>
         </label>
       </div>
       <label>
@@ -331,6 +339,8 @@ function History() {
                   <th className="num">{label('books', 'Books')}</th>
                   <th>{label('bookName', 'Name of book')}</th>
                   <th>{label('source', 'Source')}</th>
+                  <th>{label('reference', 'Receipt / Invoice No.')}</th>
+                  <th>{label('incomeRef', 'Income Ref No.')}</th>
                   <th>{label('cost', 'Total cost')}</th>
                   {canDelete && <th aria-label={label('delete', 'Delete record')} />}
                 </tr>
@@ -356,7 +366,14 @@ function History() {
                     </td>
                     <td>
                       {item.source || '—'}
-                      {item.reference && <small className="muted">#{item.reference}</small>}
+                    </td>
+                    <td>
+                      <code style={{ fontSize: '0.82em' }}>{item.reference || '—'}</code>
+                    </td>
+                    <td>
+                      {item.incomeRefNo ? (
+                        <code style={{ fontSize: '0.82em' }}>{item.incomeRefNo}</code>
+                      ) : '—'}
                     </td>
                     <td>{item.cost > 0 ? `${item.cost.toFixed(2)} ${item.currency}` : '—'}</td>
                     {canDelete && (

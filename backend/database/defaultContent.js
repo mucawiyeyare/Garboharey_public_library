@@ -90,43 +90,6 @@ const welcome = {
   },
 }
 
-const defaultEvents = [
-  {
-    kind: 'event',
-    title: {
-      en: 'Garbaharey Annual Youth Reading Marathon',
-      so: 'Tartanka Sanadlaha ah ee Akhriska Dhalinyarada',
-      ar: 'ماراثون القراءة السنوي لشباب غاربحاري',
-    },
-    body: {
-      en: 'A month-long celebration of reading for primary and secondary school students in Garbaharey. Participants log finished titles, discuss themes with peer mentors, and earn certificates of reading excellence.',
-      so: 'Barnaamij bil soconaya oo loogu talagalay ardayda dugsiyada ee Garbahaareey si loo dhiirrigeliyo akhriska buugaagta.',
-      ar: 'احتفالية تمتد لشهر كامل لتشجيع القراءة بين طلاب المدارس في غاربحاري مع حلقات نقاش وجوائز تقديرية.',
-    },
-    eventDate: new Date('2026-10-24T09:00:00Z'),
-    featured: true,
-    published: true,
-    order: 1,
-  },
-  {
-    kind: 'event',
-    title: {
-      en: 'Online Catalog & Digital Research Workshop',
-      so: 'Tababarka Kaydka Buugaagta ee Online-ka ah',
-      ar: 'ورشة عمل الفهرس الإلكتروني والبحث الرقمي',
-    },
-    body: {
-      en: "Hands-on session for students and educators on navigating the library's computerized catalog, searching ISBNs, reserving checked-out titles, and finding verified reference materials.",
-      so: 'Tababar ku saabsan sida loo isticmaalo buug-raadiyaha online-ka ah iyo helidda buugaagta waxbarashada.',
-      ar: 'جلسة تدريبية عملية للطلاب والمعلمين للتعرف على كيفية استخدام الفهرس الآلي والبحث عن المراجع وحجز الكتب.',
-    },
-    eventDate: new Date('2026-10-29T14:00:00Z'),
-    featured: true,
-    published: true,
-    order: 2,
-  },
-]
-
 export async function ensureDefaultContent() {
   if (!(await Content.exists({ kind: 'service' }))) {
     await Content.insertMany(
@@ -148,9 +111,5 @@ export async function ensureDefaultContent() {
       featured: true,
       published: true,
     })
-  }
-
-  if (!(await Content.exists({ kind: 'event' }))) {
-    await Content.insertMany(defaultEvents)
   }
 }

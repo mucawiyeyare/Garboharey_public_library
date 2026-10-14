@@ -75,6 +75,7 @@ import Join from '../features/members/JoinPage'
 import EventsPage from '../features/catalog/EventsPage'
 import Policies from '../features/auth/PoliciesPage'
 import Faq from '../features/catalog/FaqPage'
+import LeadershipGovernancePage from '../features/governance/LeadershipGovernancePage'
 
 function NotFound() {
   const { t } = useTranslation()
@@ -175,11 +176,14 @@ export default function App() {
             <Route element={<Protected roles={['admin', 'director']} />}>
               <Route path="audit" element={<AuditLog />} />
               <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="governance" element={<LeadershipGovernancePage />} />
+              <Route path="governance/:tab" element={<LeadershipGovernancePage />} />
             </Route>
 
             {/* Admin only */}
             <Route element={<Protected admin />}>
               <Route path="team" element={<Members team />} />
+              <Route path="users" element={<Members team />} />
               <Route path="finance" element={<FinanceDashboard />} />
               <Route path="finance/income" element={<IncomePage />} />
               <Route path="finance/expenses" element={<ExpensesPage />} />

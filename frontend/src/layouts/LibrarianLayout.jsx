@@ -34,6 +34,9 @@ import {
   BookText,
   FileBarChart,
   SlidersHorizontal,
+  Landmark,
+  Award,
+  BookOpen,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthProvider'
 import ProfileMenu from './ProfileMenu'
@@ -41,105 +44,59 @@ import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import LanguageSelector from '../components/common/LanguageSelector'
 const staffLinks = [
-  { to: '/staff', label: 'overview', access: 'all', icon: LayoutDashboard },
-  { to: '/staff/notifications', label: 'notifications', access: 'ops', icon: Bell, badge: true },
-  { to: '/staff/stock', label: 'inventory', access: 'all', icon: Boxes },
-  { to: '/staff/inventory', label: 'books', access: 'ops', icon: Library },
-  { to: '/staff/categories', label: 'categories', access: 'ops', icon: Library },
-  { to: '/staff/authors', label: 'authors', access: 'ops', icon: Library },
-  { to: '/staff/publishers', label: 'publishers', access: 'ops', icon: Library },
-  // Collection: its own section in the sidebar, for acquisition records only
-  {
-    to: '/staff/acquisitions',
-    label: 'acquisition',
-    access: 'ops',
-    icon: PackagePlus,
-    group: 'collection',
-  },
-  { to: '/staff/members', label: 'members', access: 'ops', icon: Users },
-  { to: '/staff/circulation', label: 'circulation', access: 'ops', icon: ArrowRightLeft },
-  { to: '/staff/reservations', label: 'reservations', access: 'ops', icon: ClipboardList },
-  { to: '/staff/fines', label: 'fines', access: 'mgmt', icon: ClipboardList },
-  { to: '/staff/applications', label: 'applications', access: 'mgmt', icon: ClipboardList },
-  { to: '/staff/services', label: 'services', access: 'ops', icon: HeartHandshake },
-  { to: '/staff/content', label: 'siteContent', access: 'ops', icon: ClipboardList },
-  { to: '/staff/events/new', label: 'createEvent', access: 'ops', icon: CalendarPlus },
-  { to: '/staff/events', label: 'manageEvents', access: 'ops', icon: CalendarDays },
-  { to: '/staff/contact', label: 'contact', access: 'ops', icon: ClipboardList },
-  { to: '/staff/reports', label: 'reports', access: 'mgmt', icon: BarChart3 },
-  { to: '/staff/team', label: 'team', access: 'admin', icon: ShieldCheck },
-  { to: '/staff/audit', label: 'audit', access: 'audit', icon: ShieldCheck },
-  { to: '/staff/policies', label: 'policies', access: 'admin', icon: Settings2 },
-  // Finance (administrators and directors)
+  // 01 · DAILY OVERVIEW
+  { to: '/staff', label: 'overview', title: 'Overview', access: 'all', icon: LayoutDashboard },
+  { to: '/staff/notifications', label: 'notifications', title: 'Notifications', access: 'ops', icon: Bell, badge: true },
+
+  // 02 · COLLECTION MANAGEMENT
+  { to: '/staff/stock', label: 'inventory', title: 'Inventory', access: 'all', icon: Boxes },
+  { to: '/staff/inventory', label: 'booksAndCopies', title: 'Books & Copies', access: 'ops', icon: Library },
+  { to: '/staff/categories', label: 'categories', title: 'Categories', access: 'ops', icon: Library },
+  { to: '/staff/authors', label: 'authors', title: 'Authors', access: 'ops', icon: Library },
+  { to: '/staff/publishers', label: 'publishers', title: 'Publishers', access: 'ops', icon: Library },
+  { to: '/staff/acquisitions', label: 'acquisition', title: 'Acquisition', access: 'ops', icon: PackagePlus },
+
+  // 03 · MEMBERSHIP
+  { to: '/staff/applications', label: 'applications', title: 'Applications', access: 'mgmt', icon: ClipboardList },
+  { to: '/staff/members', label: 'members', title: 'Members', access: 'ops', icon: Users },
+
+  // 04 · CIRCULATION & SERVICES
+  { to: '/staff/circulation', label: 'circulation', title: 'Circulation', access: 'ops', icon: ArrowRightLeft },
+  { to: '/staff/reservations', label: 'reservations', title: 'Reservations', access: 'ops', icon: ClipboardList },
+  { to: '/staff/services', label: 'services', title: 'Services', access: 'ops', icon: HeartHandshake },
+
+  // 05 · FINANCE
   {
     to: '/staff/finance',
-    label: 'financeDashboard',
+    label: 'finance',
+    title: 'Finance',
     access: 'admin',
-    icon: LineChart,
-    group: 'finance',
+    icon: Wallet,
+    isGroup: true,
+    children: [
+      { to: '/staff/finance/income', label: 'incomeReceipts', title: 'Income / Receipts', access: 'admin', icon: Receipt },
+      { to: '/staff/finance/expenses', label: 'expenses', title: 'Expenses', access: 'admin', icon: TrendingDown },
+      { to: '/staff/finance/budgets', label: 'budgets', title: 'Budgets', access: 'admin', icon: PiggyBank },
+      { to: '/staff/finance/donations', label: 'donationsFunding', title: 'Donations & Funding', access: 'admin', icon: Gift },
+      { to: '/staff/finance/transactions', label: 'financialTransactions', title: 'Financial Transactions', access: 'admin', icon: ListOrdered },
+      { to: '/staff/finance/reports', label: 'financialReports', title: 'Financial Reports', access: 'admin', icon: FileBarChart },
+      { to: '/staff/finance/settings', label: 'financeSettings', title: 'Finance Settings', access: 'admin', icon: SlidersHorizontal },
+    ],
   },
-  {
-    to: '/staff/finance/income',
-    label: 'income',
-    access: 'admin',
-    icon: Receipt,
-    group: 'finance',
-  },
-  {
-    to: '/staff/finance/expenses',
-    label: 'expenses',
-    access: 'admin',
-    icon: TrendingDown,
-    group: 'finance',
-  },
-  {
-    to: '/staff/finance/budgets',
-    label: 'budgets',
-    access: 'admin',
-    icon: PiggyBank,
-    group: 'finance',
-  },
-  {
-    to: '/staff/finance/donations',
-    label: 'donations',
-    access: 'admin',
-    icon: Gift,
-    group: 'finance',
-  },
-  {
-    to: '/staff/finance/transactions',
-    label: 'transactions',
-    access: 'admin',
-    icon: ListOrdered,
-    group: 'finance',
-  },
-  {
-    to: '/staff/finance/cashbook',
-    label: 'cashbook',
-    access: 'admin',
-    icon: BookText,
-    group: 'finance',
-  },
-  {
-    to: '/staff/finance/reports',
-    label: 'financeReports',
-    access: 'admin',
-    icon: FileBarChart,
-    group: 'finance',
-  },
-  {
-    to: '/staff/finance/settings',
-    label: 'financeSettings',
-    access: 'admin',
-    icon: SlidersHorizontal,
-    group: 'finance',
-  },
+  { to: '/staff/fines', label: 'fines', title: 'Fines', access: 'mgmt', icon: Receipt },
+
+  // 06 · WEBSITE MANAGEMENT
+  { to: '/staff/content', label: 'siteContent', title: 'Site Content', access: 'ops', icon: ClipboardList },
+  { to: '/staff/events', label: 'manageEvents', title: 'Manage Events', access: 'ops', icon: CalendarDays },
+  { to: '/staff/contact', label: 'contact', title: 'Contact Messages', access: 'ops', icon: ClipboardList },
+  { to: '/staff/governance', label: 'leadershipGovernance', title: 'Leadership & Governance', access: 'admin', icon: Landmark },
+
+  // 07 · REPORTS & ADMINISTRATION
+  { to: '/staff/reports', label: 'reports', title: 'Reports', access: 'mgmt', icon: BarChart3 },
+  { to: '/staff/users', label: 'users', title: 'Users', access: 'admin', icon: ShieldCheck },
+  { to: '/staff/policies', label: 'policies', title: 'Loan Policies', access: 'admin', icon: Settings2 },
 ]
-// Collapsible sidebar groups
-const groups = {
-  collection: { label: 'collection', fallback: 'Collection', icon: Library },
-  finance: { label: 'finance', fallback: 'Finance', icon: Wallet },
-}
+
 // Which roles see each group of links (the API enforces the same limits).
 // Directors see everything administrators see.
 const accessRoles = Object.fromEntries(
@@ -151,32 +108,20 @@ const accessRoles = Object.fromEntries(
     admin: ['admin'],
   }).map(([group, roles]) => [group, withDirector(roles)]),
 )
+
 export default function StaffLayout() {
   const { t } = useTranslation()
   const { user, signOut } = useAuth()
   const [open, setOpen] = useState(false)
+  const [financeOpen, setFinanceOpen] = useState(true)
   const location = useLocation()
-  const path = location.pathname.startsWith('/staff/book/') ? '/staff/stock' : location.pathname
-  const current = staffLinks.find((link) => link.to === path)
-  // A group starts open when one of its pages is showing.
-  const currentGroup = current?.group
-  const [openGroups, setOpenGroups] = useState(() => (currentGroup ? { [currentGroup]: true } : {}))
+
   useEffect(() => {
-    if (currentGroup) setOpenGroups((state) => ({ ...state, [currentGroup]: true }))
-  }, [currentGroup])
-  const visible = staffLinks.filter((link) => accessRoles[link.access].includes(user?.role))
-  const renderLink = ({ to, label, icon: Icon, badge }) => (
-    <NavLink
-      key={to}
-      to={to}
-      end={to === '/staff' || to === '/staff/events' || to === '/staff/finance'}
-      onClick={() => setOpen(false)}
-    >
-      <Icon size={19} />
-      {t(`nav.${label}`)}
-      {badge && unread.data?.count > 0 && <span className="nav-badge">{unread.data.count}</span>}
-    </NavLink>
-  )
+    if (location.pathname.startsWith('/staff/finance')) {
+      setFinanceOpen(true)
+    }
+  }, [location.pathname])
+
   // Unread staff notifications (e.g. borrowing time ended), refreshed every minute.
   const unread = useQuery({
     queryKey: ['staff-notifications-unread'],
@@ -184,6 +129,42 @@ export default function StaffLayout() {
     refetchInterval: 60_000,
     enabled: !!user && user.role !== 'member',
   })
+
+  const allLinks = staffLinks.flatMap((l) => (l.isGroup ? [l, ...l.children] : [l]))
+  const current = allLinks.find(
+    (link) =>
+      link.to === location.pathname ||
+      (link.to === '/staff/stock' && location.pathname.startsWith('/staff/book/')) ||
+      (link.to === '/staff/governance' && location.pathname.startsWith('/staff/governance')) ||
+      (link.to === '/staff/finance' && location.pathname === '/staff/finance') ||
+      (link.to === '/staff/users' && (location.pathname === '/staff/users' || location.pathname === '/staff/team')),
+  )
+
+  const visibleLinks = staffLinks.filter((link) => accessRoles[link.access]?.includes(user?.role))
+
+  const renderLink = ({ to, label, title, icon: Icon, badge }) => {
+    const isCurrent =
+      location.pathname === to ||
+      (to === '/staff' && location.pathname === '/staff') ||
+      (to === '/staff/stock' && (location.pathname === '/staff/stock' || location.pathname.startsWith('/staff/book/'))) ||
+      (to === '/staff/governance' && location.pathname.startsWith('/staff/governance')) ||
+      (to === '/staff/users' && (location.pathname === '/staff/users' || location.pathname === '/staff/team'))
+
+    return (
+      <NavLink
+        key={to}
+        to={to}
+        end={to === '/staff' || to === '/staff/events'}
+        className={({ isActive }) => (isActive || isCurrent ? 'active' : '')}
+        onClick={() => setOpen(false)}
+      >
+        <Icon size={18} aria-hidden="true" />
+        <span>{t(`nav.${label}`, title)}</span>
+        {badge && unread.data?.count > 0 && <span className="nav-badge">{unread.data.count}</span>}
+      </NavLink>
+    )
+  }
+
   return (
     <div className="workspace">
       <a className="skip-link" href="#main">
@@ -195,28 +176,64 @@ export default function StaffLayout() {
         </div>
         <p className="sidebar-label">{t('nav.workspace')}</p>
         <nav aria-label={t('nav.staff')}>
-          {visible.map((link) => {
-            if (!link.group) return renderLink(link)
-            // Render a whole group once, where its first link would be.
-            const members = visible.filter((item) => item.group === link.group)
-            if (link !== members[0]) return null
-            const { label, fallback, icon: GroupIcon } = groups[link.group]
-            const isOpen = !!openGroups[link.group]
-            return (
-              <div key={link.group} className={`nav-group${isOpen ? ' open' : ''}`}>
-                <button
-                  type="button"
-                  className={`nav-group-toggle${currentGroup === link.group ? ' active' : ''}`}
-                  aria-expanded={isOpen}
-                  onClick={() => setOpenGroups((state) => ({ ...state, [link.group]: !isOpen }))}
-                >
-                  <GroupIcon size={19} />
-                  {t(`nav.${label}`, fallback)}
-                  <ChevronDown size={16} className="nav-group-chevron" aria-hidden="true" />
-                </button>
-                {isOpen && <div className="nav-group-items">{members.map(renderLink)}</div>}
-              </div>
-            )
+          {visibleLinks.map((link) => {
+            if (link.isGroup) {
+              return (
+                <div key={link.to} className={`nav-group${financeOpen ? ' open' : ''}`}>
+                  <div style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
+                    <NavLink
+                      to={link.to}
+                      end
+                      className={({ isActive }) => (isActive ? 'active' : '')}
+                      style={{ flex: 1 }}
+                      onClick={() => {
+                        setFinanceOpen(true)
+                        setOpen(false)
+                      }}
+                    >
+                      <link.icon size={18} aria-hidden="true" />
+                      <span>{t(`nav.${link.label}`, link.title)}</span>
+                    </NavLink>
+                    <button
+                      type="button"
+                      className="icon-button"
+                      style={{
+                        padding: '6px 8px',
+                        border: 0,
+                        background: 'transparent',
+                        color: 'var(--muted)',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                      aria-label="Toggle finance submenu"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        setFinanceOpen((prev) => !prev)
+                      }}
+                    >
+                      <ChevronDown
+                        size={15}
+                        style={{
+                          transform: financeOpen ? 'rotate(180deg)' : 'none',
+                          transition: 'transform 0.2s ease',
+                        }}
+                      />
+                    </button>
+                  </div>
+                  {financeOpen && (
+                    <div className="nav-group-items">
+                      {link.children
+                        .filter((child) => accessRoles[child.access]?.includes(user?.role))
+                        .map(renderLink)}
+                    </div>
+                  )}
+                </div>
+              )
+            }
+            return renderLink(link)
           })}
         </nav>
         <div className="sidebar-preferences">
@@ -234,6 +251,13 @@ export default function StaffLayout() {
           </button>
         </div>
       </aside>
+      {open && (
+        <div
+          className="sidebar-backdrop"
+          onClick={() => setOpen(false)}
+          aria-hidden="true"
+        />
+      )}
       <div className="workspace-content">
         <header className="workspace-header">
           <div className="flex items-center gap-3">
@@ -249,7 +273,7 @@ export default function StaffLayout() {
               {t('nav.workspaceCrumb')} <span className="muted">/</span>{' '}
               <strong>
                 {current
-                  ? t(`nav.${current.label}`)
+                  ? t(`nav.${current.label}`, current.title)
                   : location.pathname === '/staff/profile'
                     ? t('nav.myProfile')
                     : t('nav.overview')}

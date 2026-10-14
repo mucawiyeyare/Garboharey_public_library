@@ -28,6 +28,7 @@ import { publicContactRouter, staffContactRouter } from './routes/contactRoutes.
 import financeRouter from './routes/financeRoutes.js'
 import { taxonomyRouter, coverRouter, settingsRouter } from './routes/taxonomyRoutes.js'
 import { publicApplicationRouter, staffApplicationRouter } from './routes/applicationRoutes.js'
+import { publicGovernanceRouter, staffGovernanceRouter } from './routes/governanceRoutes.js'
 
 // ── App setup ─────────────────────────────────────────────────────────────────
 export const app = express()
@@ -41,7 +42,7 @@ app.use(
     origin: (origin, callback) => callback(null, !origin || isTrustedOrigin(origin)),
     credentials: true,
   }),
-  express.json({ limit: '100kb' }),
+  express.json({ limit: '10mb' }),
   cookieParser(),
 )
 
@@ -109,6 +110,8 @@ app.use('/api/contact', publicContactRouter)
 app.use('/api/staff/contact', staffContactRouter)
 app.use('/api/staff/finance', financeRouter)
 app.use('/api/library/policies', publicPolicyRouter)
+app.use('/api/governance', publicGovernanceRouter)
+app.use('/api/staff/governance', staffGovernanceRouter)
 app.use('/api/notifications', memberNoticeRouter)
 // Last of the /api/staff routers: audit history, loan policies, staff notifications.
 app.use('/api/staff', staffRouter)

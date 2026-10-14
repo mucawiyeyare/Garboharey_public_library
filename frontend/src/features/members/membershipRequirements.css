@@ -1,0 +1,204 @@
+/* Membership Requirements Cards */
+.membership-req-container {
+  margin-bottom: 2.5rem;
+  background: var(--surface);
+  border: 1px solid var(--line, var(--border));
+  border-radius: var(--radius, 14px);
+  padding: 28px 24px;
+  box-shadow: 0 4px 20px -8px rgba(0, 0, 0, 0.06);
+}
+
+.membership-req-container.compact {
+  padding: 16px;
+  margin-bottom: 1.25rem;
+  box-shadow: none;
+}
+
+.membership-req-header {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 24px;
+}
+
+.membership-req-container.compact .membership-req-header {
+  text-align: start;
+  margin: 0 0 16px;
+}
+
+.membership-req-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  background: var(--accent-soft, rgba(16, 185, 129, 0.12));
+  padding: 4px 12px;
+  border-radius: 9999px;
+  margin-bottom: 8px;
+}
+
+.membership-req-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 6px;
+  letter-spacing: -0.01em;
+}
+
+.membership-req-container.compact .membership-req-title {
+  font-size: 18px;
+}
+
+.membership-req-intro {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.membership-req-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.membership-req-container.compact .membership-req-grid {
+  grid-template-columns: 1fr;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-bottom: 14px;
+}
+
+.membership-req-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 16px;
+  background: var(--surface-card, var(--surface));
+  border: 1px solid var(--line, var(--border));
+  border-radius: 12px;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  position: relative;
+}
+
+.membership-req-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  box-shadow: 0 8px 18px -6px rgba(0, 0, 0, 0.1);
+}
+
+.membership-req-card-badge {
+  flex: none;
+  min-width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  background: var(--accent-soft, rgba(16, 185, 129, 0.12));
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.02em;
+}
+
+.membership-req-card-icon {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--soft, rgba(0, 0, 0, 0.04));
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.membership-req-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.membership-req-card-text {
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--text);
+  font-weight: 600;
+  margin: 0;
+}
+
+.membership-req-card-sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+/* Fiiro gaar ah Callout Banner */
+.membership-req-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  border-inline-start: 5px solid #f59e0b;
+  border-radius: 10px;
+}
+
+.membership-req-note-icon {
+  flex: none;
+  color: #d97706;
+  margin-top: 2px;
+}
+
+.membership-req-note-content strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: #b45309;
+  margin-bottom: 3px;
+}
+
+[data-theme='dark'] .membership-req-note-content strong {
+  color: #fbbf24;
+}
+
+.membership-req-note-content p {
+  margin: 0;
+  font-size: 13.5px;
+  color: var(--text);
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.membership-agree-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 14px 16px;
+  background: var(--soft, rgba(0, 0, 0, 0.02));
+  border: 1px dashed var(--line, var(--border));
+  border-radius: 10px;
+  margin: 14px 0;
+  cursor: pointer;
+}
+
+.membership-agree-box input[type="checkbox"] {
+  margin-top: 3px;
+  accent-color: var(--accent);
+  width: 17px;
+  height: 17px;
+}
+
+.membership-agree-box span {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+}

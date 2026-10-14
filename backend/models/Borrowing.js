@@ -17,7 +17,7 @@ export const Loan =
         phone: { type: String, required: true, trim: true },
         borrowerType: {
           type: String,
-          enum: ['regular', 'member', 'librarian', 'admin'],
+          enum: ['regular', 'member', 'librarian', 'admin', 'institutional'],
           default: 'regular',
           index: true,
         },

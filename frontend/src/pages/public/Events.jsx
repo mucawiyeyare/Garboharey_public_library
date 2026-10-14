@@ -10,9 +10,10 @@ import {
   Sparkles,
   Archive,
   BookOpen,
+  Edit,
 } from 'lucide-react'
+import { useAuth } from '../../context/AuthProvider'
 import { usePublicContent } from './hooks/usePublicContent'
-import { CONFIRMED_EVENTS } from './eventsData'
 import '../../features/catalog/content.css'
 import '../../features/catalog/events.css'
 
@@ -36,7 +37,9 @@ function useFormatDate() {
 
 export default function EventsPage() {
   const { t } = useTranslation()
+  const { user } = useAuth()
   const formatDate = useFormatDate()
+  const canEdit = user?.role && ['admin', 'librarian', 'director'].includes(user.role)
 
   // Live content from API /library/content/event (entered by staff)
   const apiEvents = usePublicContent('event')
@@ -45,29 +48,23 @@ export default function EventsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
 
-  // Merge API events with confirmed library events
+  // Live content from API /library/content/event (entered by staff)
   const allEvents = useMemo(() => {
-    const fromApi = (apiEvents.data || []).map((item) => ({
+    return (apiEvents.data || []).map((item) => ({
       _id: item._id,
       title: item.title,
       category: item.category || 'Reading Programs',
       eventDate: item.eventDate || item.createdAt,
-      time: item.time || '10:00 AM – 1:00 PM',
-      location: item.location || 'Main Reading Hall, Garbaharey',
+      time: item.time || '4:00 PM – 6:00 PM',
+      location: item.location || 'Garbaharey Public Library',
       image: item.image || '/images/hero-reading-hall.webp',
       shortDesc: item.body?.slice(0, 180) + (item.body?.length > 180 ? '…' : ''),
       status:
-        item.eventDate && new Date(item.eventDate) < new Date('2026-09-01')
+        item.eventDate && new Date(item.eventDate).getTime() < new Date().setHours(0, 0, 0, 0)
           ? 'past'
           : 'upcoming',
       isLiveApi: true,
     }))
-
-    // Combine avoiding duplicate IDs
-    const apiIds = new Set(fromApi.map((e) => String(e._id)))
-    const confirmed = CONFIRMED_EVENTS.filter((e) => !apiIds.has(String(e._id)))
-
-    return [...fromApi, ...confirmed]
   }, [apiEvents.data])
 
   const categories = [
@@ -237,14 +234,26 @@ export default function EventsPage() {
 
                     <p className="event-card-desc">{event.shortDesc}</p>
 
-                    <div className="event-card-footer">
+                    <div className="event-card-footer" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px' }}>
                       <Link className="event-card-link" to={`/events/${event._id}`}>
                         {t('eventsPage.card.viewDetails', 'View Details')}
                         <ArrowRight size={15} aria-hidden="true" />
                       </Link>
-                      <span className="text-xs text-muted font-medium">
-                        {event.category}
-                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        {canEdit && (
+                          <Link
+                            className="button secondary small"
+                            to="/staff/events"
+                            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', padding: '4px 8px', fontSize: '12px' }}
+                          >
+                            <Edit size={13} />
+                            {t('staffContent.edit', 'Edit')}
+                          </Link>
+                        )}
+                        <span className="text-xs text-muted font-medium">
+                          {event.category}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </article>

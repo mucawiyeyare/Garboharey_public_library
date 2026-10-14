@@ -63,7 +63,11 @@
     "transactions": "Dhaqdhaqaaqa Maaliyadda",
     "cashbook": "Buugga Lacagta",
     "financeReports": "Warbixinnada Maaliyadda",
-    "financeSettings": "Dejinta Maaliyadda"
+    "financeSettings": "Dejinta Maaliyadda",
+    "leadershipGovernance": "Hoggaanka & Maamulka",
+    "ourFounders": "Aasaasayaashayada",
+    "boardOfDirectors": "Guddiga Maamulka",
+    "directorsMessage": "Farriinta Agaasimaha"
   },
   "language": {
     "label": "Luqad",
@@ -199,15 +203,13 @@
     "lookupButton": "Hubi xaaladda",
     "approved": "LA OGOLAADAY. Iimaylkaaga ka eeg xiriir aad ku samaysato erayga sirta ah.",
     "rejected": "LA DIIDAY",
-    "requirementsTitle": "Shuruudaha xubinnimada",
-    "requirementsIntro": "Kahor intaadan codsan, fadlan ogow in xubin kastaa ay tahay inuu:",
-    "agree": "Waan fahmay oo waan aqbalay shuruudaha xubinnimada ee kor ku xusan.",
-    "req": {
-      "feeTitle": "Bixi lacagta xubinnimada ee loo baahan yahay",
-      "feeText": "Xubintu waa inuu bixiyaa lacagta xubinnimada maktabadda ee loo baahan yahay.",
-      "eventsTitle": "Ka qayb gal dhacdooyinka maktabadda",
-      "eventsText": "Xubinta waxaa laga filayaa inuu ka qayb galo dhacdooyinka iyo hawlaha maktabadda."
-    }
+    "requirementsTitle": "Shuruudaha Xubinnimada Maktabadda",
+    "requirementsIntro": "Kahor intaadan codsan, fadlan dhowr oo u hoggaansan shuruudaha iyo anshaxa soo socda:",
+    "requirementsNoteTitle": "Fiiro gaar ah:",
+    "requirementsNoteText": "Xubinnimada Maktabadda Dadweynaha Garbaharay waxay ku dhisan tahay ixtiraam, wada-shaqayn iyo ilaalinta hantida guud.",
+    "formTitle": "Foomka Codsiga Xubinnimada",
+    "formSubtitle": "Buuxi xogtaada hoose si aad u codsato xubinnimada maktabadda.",
+    "agree": "Waan fahmay oo waan aqbalay dhammaan shuruudaha xubinnimada ee kor ku xusan."
   },
   "staffContent": {
     "title": "Nuxurka bogga",
@@ -1261,10 +1263,13 @@
     "searchHint": "Raadi cinwaan, qoraa, ISBN ama nooc",
     "filter": "Shaandhee",
     "filters": {
-      "all": "Dhammaan",
+      "all": "Dhammaan nuqullada",
       "available": "La heli karo",
       "borrowed": "La amaahday",
-      "unavailable": "Lama heli karo"
+      "reserved": "La qabsaday",
+      "damaged": "Waxyeelloobay",
+      "returned": "La soo celiyey",
+      "lost": "Luntay / La la'yahay"
     },
     "book": "Buug",
     "type": "Nooc",
@@ -1276,6 +1281,9 @@
       "available": "La heli karo",
       "borrowed": "Dhammaan la amaahday",
       "reserved": "La kaydiyay",
+      "damaged": "Waxyeelloobay",
+      "lost": "Luntay / La la'yahay",
+      "returned": "La soo celiyey",
       "none": "Nuqul ma leh"
     },
     "empty": "Buug ku habboon ma jiro."

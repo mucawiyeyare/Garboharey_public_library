@@ -110,8 +110,8 @@ export default function DirectorDashboard() {
           )}
           <div className="quick-actions">
             {[
-              ['/staff/audit', t('director.audit')],
               ['/staff/fines', t('director.fines')],
+              ['/staff/reports', t('director.reports')],
             ].map(([to, label]) => (
               <Link key={to} to={to}>
                 <div>

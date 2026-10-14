@@ -22,12 +22,12 @@ export default function ContactPage() {
   const details = useLibrarySettings()
 
   const name = details.data?.name ?? defaultLibrary.name
-  const email = details.data?.email || 'info@garbaharey-library.org'
-  const phone = details.data?.phone || '+252 61 1234567'
+  const email = details.data?.email || 'garbohaarreypubliclibrary@gmail.com'
+  const phone = details.data?.phone || '+252 61 1317333'
   const address = details.data?.address || 'Main Street, Garbaharey, Gedo, Somalia'
   const hours =
     details.data?.hours ||
-    'Saturday – Thursday: 8:00 AM – 6:00 PM (Friday Closed)'
+    'Saturday – Thursday: 4:00 PM – 6:00 PM (Friday Closed)'
 
   const faqs = [
     {
@@ -130,7 +130,7 @@ export default function ContactPage() {
                   <p className="text-xs text-muted mt-1">
                     {t(
                       'contact.phoneHelp',
-                      'Staff assistance available Saturday – Thursday: 8:00 AM – 6:00 PM',
+                      'Staff assistance available Saturday – Thursday: 4:00 PM – 6:00 PM',
                     )}
                   </p>
                 </dd>

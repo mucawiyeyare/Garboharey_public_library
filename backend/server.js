@@ -25,12 +25,6 @@ try {
   // 4b. Store the default services & welcome notice once, so the home page reads them from the database
   await ensureDefaultContent()
 
-  // 5. Seed sample data in a fresh development environment
-  if (config.NODE_ENV === 'development' && (await Book.estimatedDocumentCount()) === 0) {
-    const { seedCatalog } = await import('../scripts/seed/seed.js')
-    await seedCatalog()
-    console.log('Empty development catalog: sample books inserted.')
-  }
 
   // 6. Start the HTTP server
   const server = app.listen(config.PORT, () =>
