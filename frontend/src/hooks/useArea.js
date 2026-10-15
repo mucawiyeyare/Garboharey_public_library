@@ -1,7 +1,7 @@
 import { useLocation } from 'react-router-dom'
 
 // Which part of the site a page is shown in, so links keep people inside their dashboard.
-// Returns '/account' (member portal), '/staff' (staff workspace) or '' (public website).
+// Returns '/account' (member portal), '/staff' (staff dashboard) or '' (public website).
 export function useArea() {
   const { pathname } = useLocation()
   if (pathname.startsWith('/account')) return '/account'

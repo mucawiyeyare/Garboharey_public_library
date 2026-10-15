@@ -54,7 +54,7 @@ export default function MembersPage({ team = false }) {
   return (
     <>
       <PageHeading
-        eyebrow={team ? t('ui.members.teamEyebrow', 'STAFF MANAGEMENT') : t('ui.members.eyebrow', 'Staff workspace')}
+        eyebrow={team ? t('ui.members.teamEyebrow', 'STAFF MANAGEMENT') : t('ui.members.eyebrow', 'Dashboard')}
         title={team ? t('nav.users', 'Users') : t('nav.members', 'Members')}
         description={
           team

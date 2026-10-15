@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import LanguageSelector from '../components/common/LanguageSelector'
 import Brand from '../components/common/Brand'
 import { useAuth } from '../context/AuthProvider'
+import { getDashboardPath } from '../utils/roles'
 // Menu panel for phones, tablets and small laptops. It ends with the same Sign in and
 // Join the Library buttons as the large-screen header.
 export default function MobileNavigation() {
@@ -52,11 +53,19 @@ export default function MobileNavigation() {
                 {label}
               </NavLink>
             ))}
+            {user && (
+              <NavLink
+                to={getDashboardPath(user)}
+                onClick={() => setOpen(false)}
+              >
+                {t('nav.dashboard', 'Dashboard')}
+              </NavLink>
+            )}
           </nav>
           <div className="navigation-actions">
             <Link
               className="button secondary"
-              to={!user ? '/login' : user.role === 'member' ? '/account' : '/staff'}
+              to={!user ? '/login' : getDashboardPath(user)}
               onClick={() => setOpen(false)}
             >
               {user ? (
@@ -66,9 +75,7 @@ export default function MobileNavigation() {
               )}
               {!user
                 ? t('nav.signIn')
-                : user.role === 'member'
-                  ? t('nav.myLibrary')
-                  : t('nav.staffWorkspace')}
+                : t('nav.dashboard', 'Dashboard')}
             </Link>
             <Link className="button" to="/join" onClick={() => setOpen(false)}>
               <UserPlus size={18} aria-hidden="true" />

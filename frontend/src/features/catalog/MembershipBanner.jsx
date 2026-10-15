@@ -2,6 +2,7 @@ import { ArrowRight, Bookmark } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../context/AuthProvider'
+import { getDashboardPath } from '../../utils/roles'
 export default function MembershipBanner() {
   const { t } = useTranslation()
   const { user } = useAuth()
@@ -15,7 +16,7 @@ export default function MembershipBanner() {
         <h2>{user ? t('home.banner.signedIn') : t('home.banner.signedOut')}</h2>
         <p>{t('home.banner.text')}</p>
       </div>
-      <Link className="button" to={user ? '/account' : '/join'}>
+      <Link className="button" to={!user ? '/join' : getDashboardPath(user)}>
         {user ? t('home.banner.open') : t('home.banner.join')}
         <ArrowRight size={18} aria-hidden="true" />
       </Link>

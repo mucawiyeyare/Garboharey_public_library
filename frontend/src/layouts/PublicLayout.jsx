@@ -8,6 +8,7 @@ import { UserPlus } from 'lucide-react'
 import MobileNavigation from './MobileNavigation'
 import ThemeButton from '../components/common/ThemeButton'
 import { useAuth } from '../context/AuthProvider'
+import { getDashboardPath } from '../utils/roles'
 import '../features/catalog/information.css'
 export default function PublicLayout() {
   const { t } = useTranslation()
@@ -34,9 +35,10 @@ export default function PublicLayout() {
             <NavLink to="/services">{t('nav.services')}</NavLink>
             <NavLink to="/events">{t('nav.events')}</NavLink>
             <NavLink to="/contact">{t('nav.contactUs')}</NavLink>
-            {user?.role === 'member' && <NavLink to="/account">{t('nav.myLibrary')}</NavLink>}
-            {user && user.role !== 'member' && (
-              <NavLink to="/staff">{t('nav.staffWorkspace')}</NavLink>
+            {user && (
+              <NavLink to={getDashboardPath(user)}>
+                {t('nav.dashboard', 'Dashboard')}
+              </NavLink>
             )}
           </nav>
           <div className="nav-actions">
@@ -44,7 +46,7 @@ export default function PublicLayout() {
             <LanguageSelector />
             <Link
               className="header-sign-in"
-              to={!user ? '/login' : user.role === 'member' ? '/account' : '/staff'}
+              to={!user ? '/login' : getDashboardPath(user)}
             >
               {user ? user.name.split(' ')[0] : t('nav.signIn')}
             </Link>
