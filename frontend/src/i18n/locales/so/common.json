@@ -209,6 +209,12 @@
     "requirementsNoteText": "Xubinnimada Maktabadda Dadweynaha Garbaharay waxay ku dhisan tahay ixtiraam, wada-shaqayn iyo ilaalinta hantida guud.",
     "formTitle": "Foomka Codsiga Xubinnimada",
     "formSubtitle": "Buuxi xogtaada hoose si aad u codsato xubinnimada maktabadda.",
+    "password": "Erayga sirta ah (Password)",
+    "confirmPassword": "Xaqiiji erayga sirta ah",
+    "passwordNote": "Dooro eray sir ah si aad u gasho koontadaada marka maamuluhu oggolaado xubinnimadaada.",
+    "emailRequiredForAccount": "Fadlan gali iimaylkaaga si aad ugu gasho koontadaada marka la oggolaado.",
+    "passwordMismatch": "Erayada sirta ah isma laha.",
+    "accountCreatedNote": "Codsigaagii xubinnimada waa la gudbiyay, koontadaadiina waxay sugeysaa oggolaanshaha maamulka. Waxaad awoodi doontaa inaad gasho marka maamuluhu oggolaado.",
     "agree": "Waan fahmay oo waan aqbalay dhammaan shuruudaha xubinnimada ee kor ku xusan."
   },
   "staffContent": {

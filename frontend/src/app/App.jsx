@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { Link, Route, Routes } from 'react-router-dom'
+import { Link, Navigate, Route, Routes } from 'react-router-dom'
 
 // Layouts
 import PublicLayout from '../layouts/PublicLayout'
@@ -113,7 +113,7 @@ export default function App() {
           <Route path="catalog" element={<Catalog />} />
           <Route path="book/:bookId" element={<BookDetails />} />
           <Route path="login" element={<SignIn />} />
-          <Route path="register" element={<SignIn />} />
+          <Route path="register" element={<Navigate to="/join" replace />} />
           <Route path="forgot-password" element={<Recovery />} />
           <Route path="reset-password" element={<Recovery />} />
           <Route path="verify-email" element={<Recovery />} />

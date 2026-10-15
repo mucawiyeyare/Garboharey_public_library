@@ -13,6 +13,7 @@ export const applicationSchema = z.object({
   fullName: z.string().trim().min(2).max(100),
   phone: z.string().trim().min(5).max(30),
   email: z.string().trim().email().toLowerCase().max(254).optional().or(z.literal('')),
+  password: z.string().min(6).max(128).optional().or(z.literal('')),
   address: z.string().trim().max(200).optional().default(''),
   dateOfBirth: z
     .string()
@@ -26,6 +27,40 @@ export const applicationSchema = z.object({
 // Public: Submit a new membership application
 export const postApplication = async (req, res) => {
   const input = applicationSchema.parse(req.body)
+
+  let candidateEmail = input.email ? input.email.trim().toLowerCase() : ''
+  if (!candidateEmail && input.phone) {
+    candidateEmail = `member_${input.phone.replace(/[^0-9]/g, '') || Date.now()}@library.local`
+  }
+
+  let createdUser = null
+  if (candidateEmail) {
+    const existing = await User.findOne({ email: candidateEmail })
+    if (existing && existing.status === 'active') {
+      throw new ApiError(400, 'An active account with this email already exists. Please sign in.')
+    }
+    if (existing) {
+      createdUser = existing
+      if (input.password) {
+        createdUser.passwordHash = await argon2.hash(input.password)
+        await createdUser.save()
+      }
+    } else {
+      const passwordToHash = input.password || 'MemberPassword123!'
+      const passwordHash = await argon2.hash(passwordToHash)
+      createdUser = await User.create({
+        name: input.fullName,
+        email: candidateEmail,
+        phone: input.phone,
+        passwordHash,
+        role: 'member',
+        status: 'pending',
+        emailVerified: false,
+        lang: input.lang || 'en',
+      })
+    }
+  }
+
   const application = await Application.create({
     fullName: input.fullName,
     phone: input.phone,
@@ -35,6 +70,7 @@ export const postApplication = async (req, res) => {
     preferredContact: input.preferredContact,
     lang: input.lang,
     status: 'pending',
+    member: createdUser ? createdUser._id : null,
   })
 
   res.status(201).json({
@@ -45,7 +81,8 @@ export const postApplication = async (req, res) => {
     phone: application.phone,
     email: application.email,
     createdAt: application.createdAt,
-    message: 'Application submitted successfully. Library staff will review your application.',
+    message:
+      'Application submitted successfully. Your member account has been created and is pending administrator approval.',
   })
 }
 
@@ -124,12 +161,13 @@ export const approveApplication = async (req, res) => {
   }
 
   // Create or activate User
-  let user = await User.findOne({ email: candidateEmail })
+  let user = appRecord.member
+    ? await User.findById(appRecord.member)
+    : await User.findOne({ email: candidateEmail })
   if (user) {
-    if (user.status !== 'active') {
-      user.status = 'active'
-      await user.save()
-    }
+    user.status = 'active'
+    user.emailVerified = true
+    await user.save()
   } else {
     // Generate temporary password hash
     const tempPassword = 'MemberPassword123!'
@@ -165,7 +203,7 @@ export const approveApplication = async (req, res) => {
   })
 
   res.json({
-    message: 'Application approved. Applicant is now a library member.',
+    message: 'Application approved. Applicant is now an active library member.',
     application: appRecord,
     member: {
       _id: String(user._id),
@@ -194,6 +232,10 @@ export const rejectApplication = async (req, res) => {
   appRecord.reviewedBy = req.user.id
   appRecord.reviewedAt = new Date()
   await appRecord.save()
+
+  if (appRecord.member) {
+    await User.updateOne({ _id: appRecord.member, status: 'pending' }, { $set: { status: 'suspended' } })
+  }
 
   await Audit.create({
     actor: req.user.id,

@@ -9,7 +9,7 @@ export const User = mongoose.model(
       phone: { type: String, default: '' },
       passwordHash: { type: String, required: true, select: false },
       role: { type: String, enum: ['member', 'librarian', 'director', 'admin'], default: 'member' },
-      status: { type: String, enum: ['active', 'suspended'], default: 'active' },
+      status: { type: String, enum: ['active', 'pending', 'suspended'], default: 'active' },
       lang: { type: String, enum: ['en', 'so', 'ar'], default: 'en' },
       theme: { type: String, enum: ['light', 'dark', 'system'], default: 'system' },
       emailVerified: { type: Boolean, default: false },

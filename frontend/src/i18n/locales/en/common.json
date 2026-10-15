@@ -209,6 +209,12 @@
     "requirementsNoteText": "Garbaharey Public Library membership is built on mutual respect, cooperation, and the protection of shared public resources.",
     "formTitle": "Membership Application Form",
     "formSubtitle": "Fill in your details below to apply for your library membership card.",
+    "password": "Password (to create account)",
+    "confirmPassword": "Confirm password",
+    "passwordNote": "Set a password so you can sign in once your membership is approved by the administrator.",
+    "emailRequiredForAccount": "Please provide an email address so you can use your account to log in once approved.",
+    "passwordMismatch": "Passwords do not match.",
+    "accountCreatedNote": "Your membership application has been submitted and your member account is pending administrator approval. You will be able to sign in once an administrator approves your membership.",
     "agree": "I understand and agree to all the library membership requirements stated above."
   },
   "staffContent": {

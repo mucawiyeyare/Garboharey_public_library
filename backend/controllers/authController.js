@@ -48,7 +48,14 @@ export const postLogin = async (req, res) => {
   const input = loginSchema.parse(req.body)
   const user = await User.findOne({ email: input.email }).select('+passwordHash')
   const passwordOk = await argon2.verify(user?.passwordHash ?? decoy, input.password)
-  if (!user || !passwordOk || user.status !== 'active')
+  if (!user || !passwordOk)
+    throw new ApiError(401, 'Email or password is incorrect, or the account is unavailable')
+  if (user.status === 'pending')
+    throw new ApiError(
+      403,
+      'Your account is pending administrator approval. Please wait for library staff to approve your application.',
+    )
+  if (user.status !== 'active')
     throw new ApiError(401, 'Email or password is incorrect, or the account is unavailable')
   await Audit.create({ actor: user._id, action: 'user.login', entity: String(user._id) })
   res.json(await issueTokens(user, res))

@@ -9,6 +9,7 @@ import { Button } from '../../components/common/primitives/button'
 import { ContentHeading, Paragraphs } from '../catalog/ContentPage'
 import { usePublicContent } from '../catalog/usePublicContent'
 import MembershipRequirements, { RequirementsAgreement } from './MembershipRequirements'
+import { PasswordInput } from '../auth/PasswordInput'
 import '../catalog/content.css'
 
 export default function JoinPage() {
@@ -50,18 +51,48 @@ export default function JoinPage() {
               <h2>
                 {t('join.statusLabel')}: <strong>{t('join.pending')}</strong>
               </h2>
-              <p>{t('join.confirmation')}</p>
+              <p>
+                {t(
+                  'join.accountCreatedNote',
+                  'Your membership application has been submitted and your member account is pending administrator approval. You will be able to sign in once an administrator approves your membership.',
+                )}
+              </p>
               <p className="muted">
                 {t('join.reference')}: {apply.data.reference}
               </p>
+              <div style={{ marginTop: '16px' }}>
+                <Link className="button secondary" to="/login">
+                  {t('nav.signIn', 'Go to Sign In')}
+                </Link>
+              </div>
             </section>
           ) : (
             <form
               className="form-stack join-form"
               onSubmit={(event) => {
                 event.preventDefault()
+                const data = Object.fromEntries(new FormData(event.currentTarget))
+                if (data.password || data.confirmPassword) {
+                  if (data.password !== data.confirmPassword) {
+                    toast.error(t('join.passwordMismatch', 'Passwords do not match.'))
+                    return
+                  }
+                  if (data.password.length < 6) {
+                    toast.error(t('auth.passwordLength', 'Password must be at least 6 characters.'))
+                    return
+                  }
+                  if (!data.email) {
+                    toast.error(
+                      t(
+                        'join.emailRequiredForAccount',
+                        'Please provide an email address so you can use your account to log in once approved.',
+                      ),
+                    )
+                    return
+                  }
+                }
                 apply.mutate({
-                  ...Object.fromEntries(new FormData(event.currentTarget)),
+                  ...data,
                   lang: i18n.language,
                 })
               }}
@@ -93,6 +124,34 @@ export default function JoinPage() {
               <label>
                 {t('join.email')}
                 <Input name="email" type="email" autoComplete="email" maxLength={254} />
+              </label>
+            </div>
+            <div className="form-grid">
+              <label>
+                {t('join.password', 'Password')}
+                <PasswordInput
+                  name="password"
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                  minLength={6}
+                  maxLength={128}
+                />
+                <small className="muted" style={{ fontSize: '12px' }}>
+                  {t(
+                    'join.passwordNote',
+                    'Set a password so you can sign in once your membership is approved by the administrator.',
+                  )}
+                </small>
+              </label>
+              <label>
+                {t('join.confirmPassword', 'Confirm password')}
+                <PasswordInput
+                  name="confirmPassword"
+                  placeholder="••••••••"
+                  autoComplete="new-password"
+                  minLength={6}
+                  maxLength={128}
+                />
               </label>
             </div>
             <label>

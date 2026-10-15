@@ -18,14 +18,10 @@ export default function Login() {
   const location = useLocation()
   const navigate = useNavigate()
   const registering = location.pathname === '/register'
-  const schema = registering
-    ? registerSchema
-        .extend({ confirmPassword: z.string() })
-        .refine((values) => values.password === values.confirmPassword, {
-          path: ['confirmPassword'],
-          message: t('auth.mismatch'),
-        })
-    : loginSchema.extend({ name: z.string().optional(), confirmPassword: z.string().optional() })
+  if (registering) {
+    return <Navigate to="/join" replace />
+  }
+  const schema = loginSchema.extend({ name: z.string().optional(), confirmPassword: z.string().optional() })
   const form = useForm({
     resolver: zodResolver(schema),
   })
@@ -133,16 +129,10 @@ export default function Login() {
           </Button>
         </form>
         <p className="auth-switch">
-          {registering ? t('auth.alreadyMember') : t('auth.newHere')}{' '}
-          <button
-            className="text-link"
-            onClick={() => {
-              navigate(registering ? '/login' : '/register', { state: location.state })
-              form.reset()
-            }}
-          >
-            {registering ? t('nav.signIn') : t('auth.createAnAccount')}
-          </button>
+          {t('auth.newHere')}{' '}
+          <Link className="text-link" to="/join">
+            {t('auth.createAnAccount', 'Create an account')}
+          </Link>
         </p>
       </section>
     </div>
