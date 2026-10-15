@@ -19,7 +19,6 @@ import Home from '../pages/public/Home'
 import About from '../pages/public/About'
 import Services from '../pages/public/Services'
 import HowToJoin from '../pages/public/HowToJoin'
-import Rules from '../pages/public/LibraryRules'
 import News, { NewsDetailPage } from '../pages/public/NewsEvents'
 import Events from '../pages/public/Events'
 import EventDetails from '../pages/public/EventDetails'
@@ -106,7 +105,6 @@ export default function App() {
           <Route path="services" element={<Services />} />
           <Route path="how-to-join" element={<HowToJoin />} />
           <Route path="join" element={<Join />} />
-          <Route path="rules" element={<Rules />} />
           <Route path="news" element={<News />} />
           <Route path="news/:id" element={<NewsDetailPage />} />
           <Route path="events" element={<Events />} />

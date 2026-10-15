@@ -51,9 +51,9 @@ export default function ServicesPage() {
       ],
       actionLabel: t(
         'servicesPage.items.lending.action',
-        'View Borrowing Rules',
+        'Borrowing Guide & FAQ',
       ),
-      actionTo: '/rules',
+      actionTo: '/faq',
     },
     {
       key: 'catalog',

@@ -26,7 +26,6 @@ export default function MobileNavigation() {
     ['/catalog', t('nav.catalog')],
     ['/services', t('nav.services')],
     ['/events', t('nav.events')],
-    ['/rules', t('nav.rules')],
     ['/contact', t('nav.contactUs')],
     ['/faq', t('nav.faq')],
   ]

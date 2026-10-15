@@ -72,7 +72,6 @@ export default function PublicLayout() {
               <Link to="/catalog">{t('footer.browse')}</Link>
               <Link to="/about">{t('footer.about')}</Link>
               <Link to="/services">{t('nav.services')}</Link>
-              <Link to="/rules">{t('nav.rules')}</Link>
               <Link to="/join">{t('nav.join')}</Link>
               <Link to="/contact">{t('footer.contact')}</Link>
               <Link to="/faq">{t('footer.guide')}</Link>

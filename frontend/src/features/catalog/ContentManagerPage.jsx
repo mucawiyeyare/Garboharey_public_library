@@ -31,7 +31,7 @@ export default function ContentManagerPage({ only }) {
   const kinds = only
     ? [only]
     : isAdmin(user)
-      ? ['service', 'rule', 'about', 'news', 'event']
+      ? ['service', 'about', 'news', 'event']
       : ['service', 'news', 'event']
   const [kind, setKind] = useState(kinds[0])
   const [editing, setEditing] = useState(null)

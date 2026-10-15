@@ -812,7 +812,6 @@ export default function AboutPage() {
                 { label: 'Browse the Collection', to: '/catalog' },
                 { label: 'About the Library', to: '/about' },
                 { label: 'Library Services', to: '/services' },
-                { label: 'Library Rules', to: '/rules' },
                 { label: 'Join the Library', to: '/join' },
                 { label: 'Contact the Library', to: '/contact' },
                 { label: 'Borrowing Guide and FAQs', to: '/faq' },

@@ -9,8 +9,6 @@ import {
   BookOpen,
   HelpCircle,
   Navigation,
-  ShieldCheck,
-  FileText,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -180,10 +178,6 @@ export default function ContactPage() {
             <Link className="button" to="/faq">
               {t('contact.faq', 'Read the FAQs')} <ArrowRight size={17} aria-hidden="true" />
             </Link>
-            <Link className="text-link" to="/rules">
-              <ShieldCheck size={16} aria-hidden="true" />
-              <span>{t('nav.rules', 'Library Rules')}</span>
-            </Link>
           </aside>
         </div>
       </div>
@@ -212,13 +206,13 @@ export default function ContactPage() {
             ))}
           </div>
 
-          {/* Banner linking to Borrowing Guide and Rules */}
+          {/* Banner linking to Borrowing Guide */}
           <div className="contact-guide-banner">
             <div>
               <h3>
                 {t(
                   'contact.guideBannerTitle',
-                  'Looking for our Borrowing Guide or Library Rules?',
+                  'Looking for our Borrowing Guide?',
                 )}
               </h3>
               <p>
@@ -232,10 +226,6 @@ export default function ContactPage() {
               <Link className="button" to="/faq">
                 <HelpCircle size={16} aria-hidden="true" />
                 {t('contact.guideBtn', 'Borrowing Guide & FAQ')}
-              </Link>
-              <Link className="button secondary" to="/rules">
-                <FileText size={16} aria-hidden="true" />
-                {t('contact.rulesBtn', 'Library Rules')}
               </Link>
             </div>
           </div>
