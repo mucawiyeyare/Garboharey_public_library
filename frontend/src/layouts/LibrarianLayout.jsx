@@ -37,6 +37,7 @@ import {
   Landmark,
   Award,
   BookOpen,
+  Globe,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthProvider'
 import ProfileMenu from './ProfileMenu'
@@ -240,6 +241,10 @@ export default function StaffLayout() {
           <LanguageSelector />
         </div>
         <div className="sidebar-footer">
+          <NavLink to="/" onClick={() => setOpen(false)}>
+            <Globe size={18} aria-hidden="true" />
+            <span>{t('nav.publicWebsite', 'Public Website')}</span>
+          </NavLink>
           <button
             type="button"
             onClick={() => {

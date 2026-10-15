@@ -10,6 +10,7 @@ import {
   Bookmark,
   Clock,
   Coins,
+  Globe,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -71,6 +72,10 @@ export default function MemberLayout() {
           <LanguageSelector />
         </div>
         <div className="sidebar-footer">
+          <NavLink to="/" onClick={() => setOpen(false)}>
+            <Globe size={18} aria-hidden="true" />
+            <span>{t('nav.publicWebsite', 'Public Website')}</span>
+          </NavLink>
           <button
             type="button"
             onClick={() => {
@@ -82,6 +87,13 @@ export default function MemberLayout() {
           </button>
         </div>
       </aside>
+      {open && (
+        <div
+          className="sidebar-backdrop"
+          onClick={() => setOpen(false)}
+          aria-hidden="true"
+        />
+      )}
       <div className="workspace-content">
         <header className="workspace-header">
           <div className="flex items-center gap-3">

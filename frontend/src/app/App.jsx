@@ -10,6 +10,9 @@ import LibrarianLayout from '../layouts/LibrarianLayout'
 import Protected from '../routes/ProtectedRoute'
 import RoleDashboard from '../routes/RoleDashboard'
 import ScrollToTop from '../routes/ScrollToTop'
+import { useAuth } from '../context/AuthProvider'
+import { getDashboardPath } from '../utils/roles'
+import { Loading } from '../components/common/ui'
 
 // Auth pages (live in features/auth/)
 import Recovery from '../features/auth/RecoveryPage'
@@ -76,6 +79,13 @@ import Policies from '../features/auth/PoliciesPage'
 import Faq from '../features/catalog/FaqPage'
 import LeadershipGovernancePage from '../features/governance/LeadershipGovernancePage'
 
+function DashboardRedirect() {
+  const { user, loading } = useAuth()
+  if (loading) return <Loading />
+  if (!user) return <Navigate to="/login" state={{ from: '/dashboard' }} replace />
+  return <Navigate to={getDashboardPath(user)} replace />
+}
+
 function NotFound() {
   const { t } = useTranslation()
   return (
@@ -96,29 +106,9 @@ export default function App() {
     <>
       <ScrollToTop />
       <Routes>
-        {/* ── Public routes ── */}
-        <Route element={<PublicLayout />}>
-          <Route index element={<Home />} />
-          <Route path="about" element={<About />} />
-          <Route path="help" element={<Contact />} />
-          <Route path="contact" element={<Contact />} />
-          <Route path="services" element={<Services />} />
-          <Route path="how-to-join" element={<HowToJoin />} />
-          <Route path="join" element={<Join />} />
-          <Route path="news" element={<News />} />
-          <Route path="news/:id" element={<NewsDetailPage />} />
-          <Route path="events" element={<Events />} />
-          <Route path="events/:id" element={<EventDetails />} />
-          <Route path="faq" element={<Faq />} />
-          <Route path="catalog" element={<Catalog />} />
-          <Route path="book/:bookId" element={<BookDetails />} />
-          <Route path="login" element={<SignIn />} />
-          <Route path="register" element={<Navigate to="/join" replace />} />
-          <Route path="forgot-password" element={<Recovery />} />
-          <Route path="reset-password" element={<Recovery />} />
-          <Route path="verify-email" element={<Recovery />} />
-          <Route path="*" element={<NotFound />} />
-        </Route>
+        {/* ── Direct dashboard navigation: completely outside PublicLayout so public navbar is never rendered ── */}
+        <Route path="dashboard" element={<DashboardRedirect />} />
+        <Route path="dashboard/*" element={<DashboardRedirect />} />
 
         {/* ── Member routes (any signed-in user) ── */}
         <Route element={<Protected member />}>
@@ -134,6 +124,7 @@ export default function App() {
             <Route path="notifications" element={<MemberNotifications />} />
             <Route path="profile" element={<MemberProfile />} />
             <Route path="settings" element={<MemberProfile />} />
+            <Route path="*" element={<Navigate to="/account" replace />} />
           </Route>
         </Route>
 
@@ -194,7 +185,32 @@ export default function App() {
               <Route path="policies" element={<Policies />} />
               <Route path="settings" element={<LibrarySettings />} />
             </Route>
+            <Route path="*" element={<Navigate to="/staff" replace />} />
           </Route>
+        </Route>
+
+        {/* ── Public routes ── */}
+        <Route element={<PublicLayout />}>
+          <Route index element={<Home />} />
+          <Route path="about" element={<About />} />
+          <Route path="help" element={<Contact />} />
+          <Route path="contact" element={<Contact />} />
+          <Route path="services" element={<Services />} />
+          <Route path="how-to-join" element={<HowToJoin />} />
+          <Route path="join" element={<Join />} />
+          <Route path="news" element={<News />} />
+          <Route path="news/:id" element={<NewsDetailPage />} />
+          <Route path="events" element={<Events />} />
+          <Route path="events/:id" element={<EventDetails />} />
+          <Route path="faq" element={<Faq />} />
+          <Route path="catalog" element={<Catalog />} />
+          <Route path="book/:bookId" element={<BookDetails />} />
+          <Route path="login" element={<SignIn />} />
+          <Route path="register" element={<Navigate to="/join" replace />} />
+          <Route path="forgot-password" element={<Recovery />} />
+          <Route path="reset-password" element={<Recovery />} />
+          <Route path="verify-email" element={<Recovery />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </>

@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
 import { loginSchema, registerSchema } from '../../utils/validators'
+import { getDashboardPath } from '../../utils/roles'
 import { useAuth } from '../../context/AuthProvider'
 import { Loading } from '../../components/common/ui'
 import { BookOpen } from 'lucide-react'
@@ -26,13 +27,11 @@ export default function Login() {
     resolver: zodResolver(schema),
   })
   if (loading) return <Loading />
-  if (user)
-    return (
-      <Navigate
-        to={location.state?.from ?? (user.role === 'member' ? '/account' : '/staff')}
-        replace
-      />
-    )
+  if (user) {
+    const from = location.state?.from
+    const destination = from && from !== '/dashboard' ? from : getDashboardPath(user)
+    return <Navigate to={destination} replace />
+  }
   return (
     <div className="auth-screen">
       <section className={`auth-card${registering ? ' auth-card-register' : ''}`}>

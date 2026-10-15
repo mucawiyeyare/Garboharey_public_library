@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { useEffect, useRef } from 'react'
-import { ChevronDown, LogOut, UserRound } from 'lucide-react'
+import { ChevronDown, Globe, LogOut, UserRound } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { toast } from 'sonner'
 import { useAuth } from '../context/AuthProvider'
@@ -38,6 +38,15 @@ export default function ProfileMenu() {
         <ChevronDown size={16} aria-hidden="true" />
       </summary>
       <div className="profile-dropdown">
+        <Link
+          to="/"
+          onClick={() => {
+            if (menu.current) menu.current.open = false
+          }}
+        >
+          <Globe size={17} aria-hidden="true" />
+          {t('nav.publicWebsite', 'Public Website')}
+        </Link>
         <Link
           to="/staff/profile"
           onClick={() => {
